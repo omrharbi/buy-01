@@ -1,0 +1,22 @@
+What is Service Discovery?
+
+Service Discovery is the process of automatically detecting services in a network so 
+that microservices can communicate without hardcoding addresses.
+
+Types of Service Discovery
+Has Tow Types of service discovery mechanisms:
+
+Client-Side Service Discovery
+The client (consumer service) queries a Service Registry to get the location (IP, Port) of the required service.
+
+Example: Netflix Eureka, Consul
+
+No load on the service registry after discovery.
+
+Server-Side Service Discovery
+The client sends a request to a Load Balancer (e.g., API Gateway, Kubernetes Service).
+
+Example: AWS ALB (Application Load Balancer), Kubernetes Service
+
+Clients don’t need to handle discovery logic.
+Centralized load balancing.
