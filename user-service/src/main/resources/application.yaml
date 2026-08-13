@@ -6,7 +6,7 @@ spring:
     name: user-service
   data:
     mongodb:
-      # uri: mongodb://localhost:27017/user_db
+      uri: mongodb://localhost:27017/user_service
 
 eureka:
   client:
