@@ -18,7 +18,7 @@ public class User {
 
     private String password;
 
-    private Enum role;
+    private Role role;
 
     private String  avatar;
 }

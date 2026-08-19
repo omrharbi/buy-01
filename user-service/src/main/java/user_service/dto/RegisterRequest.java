@@ -3,9 +3,10 @@ package user_service.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
 
 
-
+@Data
 public class RegisterRequest {
 
     @NotBlank(message = "Name is required")
@@ -22,5 +23,8 @@ public class RegisterRequest {
     
     @Size(max = 255, message = "Avatar must be less than 255 characters")
     String avatar;
+
+    @NotBlank(message = "Role is required")
+    String role;
 
 }

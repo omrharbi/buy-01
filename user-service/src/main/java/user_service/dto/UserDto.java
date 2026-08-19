@@ -1,6 +1,7 @@
 package user_service.dto;
 
 import lombok.Data;
+import user_service.collection.Role;
 
 @Data
 public class UserDto {
@@ -8,5 +9,5 @@ public class UserDto {
     String email;
     String name;
     String avatar;
-    Enum role;
+    Role role;
 }
