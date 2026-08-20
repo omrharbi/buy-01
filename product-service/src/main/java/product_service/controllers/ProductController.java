@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import product_service.dto.ProductDto;
+import product_service.dto.RequestProduct;
 import product_service.services.ProductService;
 
 @RestController
@@ -23,18 +24,18 @@ public class ProductController {
     }
 
     @PostMapping("/products")
-    public String createProduct(String productData) {
+    public ProductDto createProduct(RequestProduct productData) {
         return productService.createProduct(productData);
     }
 
     @PutMapping("/products/{productId}")
-    public String updateProduct(String productId, String updatedData) {
+    public ProductDto updateProduct(String productId, RequestProduct updatedData) {
         return productService.updateProduct(productId, updatedData);
     }
 
     @DeleteMapping("/products/{productId}")
-    public String deleteProduct(String productId) {
-        return productService.deleteProduct(productId);
+    public void deleteProduct(String productId) {
+        productService.deleteProduct(productId);
     }
 
     @GetMapping("/products")

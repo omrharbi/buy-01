@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import product_service.collections.Product;
 import product_service.dto.ProductDto;
+import product_service.dto.RequestProduct;
 import product_service.repositories.ProductRepository;
 
 
@@ -14,7 +15,7 @@ import product_service.repositories.ProductRepository;
 @Service
 @RequiredArgsConstructor
 public class ProductService {
-    final ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
 
     public ProductDto getProductById(String productId) {
@@ -25,21 +26,54 @@ public class ProductService {
         return mapToDTO(product);
     }
 
+    public ProductDto createProduct(RequestProduct productData) {
+        Product product = new Product();
+        product.setName(productData.getName());
+        product.setDescription(productData.getDescription());
+        product.setPrice(productData.getPrice());
+        product.setQuantity(productData.getQuantity());
+        product.setUserId(productData.getUserId());
+        productRepository.save(product);
+        return mapToDTO(product);
+    }
+
+    public ProductDto updateProduct(String productId, RequestProduct updatedData) {
+        if (productId == null || productId.isEmpty()) {
+            throw new IllegalArgumentException("Product ID cannot be null or empty");
+        }
+
+        if (!productRepository.existsById(productId)) {
+            throw new IllegalArgumentException("Product not found");
+        }
+
+        Product product = productRepository.findById(productId).orElseThrow(() -> new IllegalArgumentException("Product not found"));
+
+        if (updatedData.getName() != null) {
+            product.setName(updatedData.getName());
+        }
+        if (updatedData.getDescription() != null) {
+            product.setDescription(updatedData.getDescription());  
+        }
+
+        if (updatedData.getPrice() != 0) {
+            product.setPrice(updatedData.getPrice());
+        }
+        if (updatedData.getQuantity() != 0) {
+            product.setQuantity(updatedData.getQuantity());
+        }
+        productRepository.save(product);
+        return mapToDTO(product);
+    }
+
+    public void deleteProduct(String productId) {
+
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+
+        productRepository.delete(product);
+    }
     
-
-    
-
-    public String createProduct(String productData) {
-        return "Product created with data: " + productData;
-    }
-
-    public String updateProduct(String productId, String updatedData) {
-        return "Product with ID: " + productId + " updated with data: " + updatedData;
-    }
-
-    public String deleteProduct(String productId) {
-        return "Product with ID: " + productId + " deleted.";
-    }
 
     public List<ProductDto> getAllProducts() {
         List<Product> products = productRepository.findAll();
