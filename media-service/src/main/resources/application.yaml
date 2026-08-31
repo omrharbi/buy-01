@@ -16,3 +16,9 @@ eureka:
     fetch-registry: true
   instance:
     prefer-ip-address: true
+
+# application.yml
+cloudinary:
+  cloud-name: "jjwxm4oa"
+  api-key: "871669674861459"
+  api-secret: "tARoCmvlEW9-lXKPA4nKr9M097E"
