@@ -16,3 +16,9 @@ eureka:
     fetch-registry: true
   instance:
     prefer-ip-address: true
+
+# application.yml
+cloudinary:
+  cloud-name: "jjwxm4oa"
+  api-key: "REMOVED"
+  api-secret: "REMOVED"
