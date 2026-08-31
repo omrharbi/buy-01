@@ -11,7 +11,6 @@ import lombok.Data;
 public class Product {
     @Id
     String id;
-
     String name;
     String description;
     Double price;

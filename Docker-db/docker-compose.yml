@@ -1,0 +1,49 @@
+version: "3.9"
+
+services:
+  user-server-db:
+    image: mongo:6.0
+    container_name: user-service-db
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    ports:
+      - "27017:27017"
+    volumes:
+      - user-db-data:/data/db
+    networks:
+      - backend-net
+  product-server-db:
+    image: mongo:6.0
+    container_name: product-service-db
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    ports:
+      - "27018:27017"
+    volumes:
+      - product-db-data:/data/db
+    networks:
+      - backend-net
+  media-server-db:
+    image: mongo:6.0
+    container_name: media-service-db
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD:  password
+    ports:
+      - "27019:27017"
+    volumes:
+      - media-db-data:/data/db
+    networks:
+      - backend-net
+volumes:
+  user-db-data:
+  product-db-data:
+  media-db-data:
+networks:
+  backend-net:
+    driver: bridge
