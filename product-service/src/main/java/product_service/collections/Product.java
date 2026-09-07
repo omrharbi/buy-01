@@ -1,5 +1,8 @@
 package product_service.collections;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -16,5 +19,5 @@ public class Product {
     Double price;
     int quantity;
     String UserId;
-
+    List<String> imageUrls = new ArrayList<>();
 }
