@@ -32,7 +32,7 @@ public class FileStorageService {
 
     public void delete(String publicId) {
         try {
-            cloudinary.uploader().destroy("buy-01/products/" + publicId,
+            cloudinary.uploader().destroy("media-service/" + publicId,
                     ObjectUtils.emptyMap());
         } catch (IOException e) {
             throw new RuntimeException("Failed to delete from Cloudinary", e);

@@ -13,6 +13,6 @@ public class Media {
     private String userId;
     private String contentType;
     private long size;
-    private String storageKey;
+    private String publicId;
     private String url; 
 }

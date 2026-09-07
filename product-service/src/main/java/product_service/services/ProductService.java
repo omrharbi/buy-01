@@ -22,7 +22,8 @@ public class ProductService {
         if (productId == null || productId.isEmpty()) {
             throw new IllegalArgumentException("Product ID cannot be null or empty");
         }
-        Product product = productRepository.findById(productId).orElseThrow(() -> new IllegalArgumentException("Product not found"));
+        Product product = productRepository.findById(productId).orElseThrow(
+            () -> new IllegalArgumentException("Product not found"));
         return mapToDTO(product);
     }
 
