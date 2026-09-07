@@ -20,7 +20,6 @@ public class MediaService {
     private final MediaMapper mediaMapper;
     private static final long MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
     public MediaResponseDto upload(MultipartFile file, String productId, String userId){
-        
         validateFile(file);
         String publicId = productId + "_" + userId + "_" + System.currentTimeMillis();
         Map<String, Object> uploadResult = fileStorageService.uploadFile(file, publicId);
