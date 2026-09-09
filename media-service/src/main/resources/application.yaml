@@ -6,7 +6,12 @@ spring:
     name: media-service
   data:
     mongodb:
-      uri: mongodb://localhost:27017/media-service-db
+      uri: mongodb://root:password@localhost:27019/media-service-db?authSource=admin
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB
+      max-request-size: 5MB
 
 eureka:
   client:
@@ -17,7 +22,6 @@ eureka:
   instance:
     prefer-ip-address: true
 
-# application.yml
 cloudinary:
   cloud-name: "jjwxm4oa"
   api-key: "871669674861459"

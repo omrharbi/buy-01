@@ -1,26 +1,34 @@
 package media_service.services;
 
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import java.util.Map;
-import java.util.NoSuchElementException;
-
-import org.apache.tika.Tika;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import media_service.Mapper.MediaMapper;
 import media_service.collections.Media;
 import media_service.dto.MediaResponseDto;
 import media_service.reposetory.MediaRepository;
+import org.apache.tika.Tika;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.Map;
+import java.util.NoSuchElementException;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MediaService {
+
     private final MediaRepository mediaRepository;
     private final FileStorageService fileStorageService;
     private final MediaMapper mediaMapper;
+
     private static final long MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-    public MediaResponseDto upload(MultipartFile file, String productId, String userId){
+
+    public MediaResponseDto uploadImage(MultipartFile file, String productId, String userId) {
         validateFile(file);
+
         String publicId = productId + "_" + userId + "_" + System.currentTimeMillis();
         Map<String, Object> uploadResult = fileStorageService.uploadFile(file, publicId);
 
@@ -30,44 +38,45 @@ public class MediaService {
         media.setContentType(file.getContentType());
         media.setSize(file.getSize());
         media.setPublicId((String) uploadResult.get("public_id"));
-        media.setUrl((String) uploadResult.get("fileUrl"));
-        mediaRepository.save(media);
-        return mediaMapper.toDto(media);
+        media.setUrl((String) uploadResult.get("secure_url"));
+
+        Media saved = mediaRepository.save(media);
+        return mediaMapper.toDto(saved);
     }
 
     public MediaResponseDto get(String id) {
         Media media = mediaRepository.findById(id)
-                .orElseThrow(() -> new 
-                NoSuchElementException("Media not found"));
+                .orElseThrow(() -> new NoSuchElementException("Media not found"));
         return mediaMapper.toDto(media);
     }
 
     public void delete(String id, String userId) {
-        MediaResponseDto media = get(id);
+        Media media = mediaRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Media not found"));
         if (!media.getUserId().equals(userId)) {
             throw new AccessDeniedException("You do not own this media");
         }
         fileStorageService.delete(media.getPublicId());
         mediaRepository.deleteById(id);
     }
-    
-    private void validateFile (MultipartFile file){
-        if (file==null || file.isEmpty()){
+
+    private void validateFile(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("File is empty");
         }
-        if (file.getSize() > MAX_FILE_SIZE){
+        if (file.getSize() > MAX_FILE_SIZE) {
             throw new IllegalArgumentException("File size exceeds the limit");
         }
-        final String contentType = file.getContentType();
-        if (!contentType.startsWith("image/")){
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
             throw new IllegalArgumentException("Only image files are allowed");
         }
-        try{
-             String detected = new Tika().detect(file.getInputStream()).toString();
-             if (!detected.startsWith("image/")) {
+        try {
+            String detected = new Tika().detect(file.getInputStream());
+            if (!detected.startsWith("image/")) {
                 throw new IllegalArgumentException("File content is not a valid image");
             }
-        } catch (Exception e){
+        } catch (IOException e) {
             throw new IllegalArgumentException("File is not readable");
         }
     }
