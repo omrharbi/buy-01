@@ -9,5 +9,4 @@ public class RequestProduct {
     private double price;
     private int quantity;
     private String userId;
-    
 }
