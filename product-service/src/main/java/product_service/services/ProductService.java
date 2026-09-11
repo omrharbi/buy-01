@@ -10,7 +10,7 @@ import product_service.Exception.InvalidProductRequestException;
 import product_service.Exception.ProductNotFoundException;
 import product_service.Mapper.ProductMapper;
 import product_service.collections.Product;
-import product_service.client.MediaClient;
+// import product_service.client.MediaClient;
 import product_service.dto.ProductDto;
 import product_service.dto.RequestProduct;
 import product_service.repositories.ProductRepository;
@@ -21,7 +21,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
-    private final MediaClient mediaClient;
+    // private final MediaClient mediaClient;
 
     public ProductDto getProductById(String productId) {
         if (productId == null || productId.isEmpty()) {
@@ -44,15 +44,15 @@ public class ProductService {
         return productMapper.toDto(saved);
     }
 
-    public ProductDto createProductWithImage(RequestProduct productData, MultipartFile image) {
-        Product product = productMapper.toEntity(productData);
-        Product saved = productRepository.save(product);
+    // public ProductDto createProductWithImage(RequestProduct productData, MultipartFile image) {
+    //     Product product = productMapper.toEntity(productData);
+    //     Product saved = productRepository.save(product);
 
-        MediaClient.MediaResponse media = mediaClient.uploadImage(
-                image, saved.getId(), productData.getUserId());
-        saved.getImageUrls().add(media.getUrl());
-        return productMapper.toDto(productRepository.save(saved));
-    }
+    //     MediaClient.MediaResponse media = mediaClient.uploadImage(
+    //             image, saved.getId(), productData.getUserId());
+    //     saved.getImageUrls().add(media.getUrl());
+    //     return productMapper.toDto(productRepository.save(saved));
+    // }
 
     public ProductDto updateProduct(String productId, RequestProduct updatedData) {
         Product product = productRepository.findById(productId)
