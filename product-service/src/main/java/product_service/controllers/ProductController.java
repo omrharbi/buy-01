@@ -27,12 +27,12 @@ public class ProductController {
         return productService.createProduct(productData);
     }
 
-    @PostMapping(value = "/with-image", consumes = "multipart/form-data")
-    public ProductDto createProductWithImage(
-            @RequestPart("product") RequestProduct productData,
-            @RequestPart("file") MultipartFile image) {
-        return productService.createProductWithImage(productData, image);
-    }
+    // @PostMapping(value = "/with-image", consumes = "multipart/form-data")
+    // public ProductDto createProductWithImage(
+    //         @RequestPart("product") RequestProduct productData,
+    //         @RequestPart("file") MultipartFile image) {
+    //     return productService.createProductWithImage(productData, image);
+    // }
 
     @PutMapping("/{productId}")
     public ProductDto updateProduct(@PathVariable String productId, @RequestBody RequestProduct updatedData) {
