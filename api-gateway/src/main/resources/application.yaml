@@ -4,22 +4,24 @@ spring:
 
   cloud:
     gateway:
-      discovery:
-        locator:
-          enabled: true
-    routes:
-      - id: user-service
-        uri: lb://USER-SERVICE
-        predicates:
-          - Path=/api/auth/**, /api/users/**
-      - id: product-service
-        uri: lb://PRODUCT-SERVICE
-        predicates:
-          - Path=/api/products/**
-      - id: media-service
-        uri: lb://MEDIA-SERVICE
-        predicates:
-          - Path=/media/**
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+          routes:
+            - id: user-service
+              uri: lb://USER-SERVICE
+              predicates:
+                - Path=/api/auth/**,/api/users/**
+            - id: product-service
+              uri: lb://PRODUCT-SERVICE
+              predicates:
+                - Path=/api/products/**
+            - id: media-service
+              uri: lb://MEDIA-SERVICE
+              predicates:
+                - Path=/media/**
 
 eureka:
   client:

@@ -1,11 +1,9 @@
 package product_service.Exception;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.NOT_FOUND)
-public class ProductNotFoundException extends RuntimeException {
-       public ProductNotFoundException(String message) {
-        super(message);
+public class ProductNotFoundException extends ApiException {
+    public ProductNotFoundException(String message) {
+        super(HttpStatus.NOT_FOUND, message);
     }
 }

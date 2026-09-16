@@ -1,6 +1,6 @@
 package user_service.services;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -9,7 +9,12 @@ import user_service.dto.AuthResponse;
 import user_service.dto.LoginRequest;
 import user_service.dto.RegisterRequest;
 import user_service.dto.UserDto;
+import user_service.collection.Role;
+import user_service.exception.InvalidCredentialsException;
+import user_service.exception.InvalidUserRequestException;
+import user_service.exception.UserAlreadyExistsException;
 import user_service.repositories.UserRepository;
+import user_service.security.JwtService;
 
 
 @Service
@@ -17,28 +22,28 @@ import user_service.repositories.UserRepository;
 public class AuthService {
 
     final UserRepository userRepository;
-    private final BCryptPasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    public AuthResponse loginService(LoginRequest request, String token) {
+    public AuthResponse loginService(LoginRequest request) {
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("user not found"));
-        
-        
+                .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
+
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("invalid password");
+            throw new InvalidCredentialsException("Invalid email or password");
         }
 
         AuthResponse response = new AuthResponse();
         response.setUser(mapToDTO(user));
-        response.setToken(token);
+        response.setToken(jwtService.generateToken(user));
 
         return response;
     }
 
     public UserDto registerService(RegisterRequest request){
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new RuntimeException("user already exists");
+            throw new UserAlreadyExistsException("A user with this email already exists");
         }
 
         User user = new User();
@@ -49,7 +54,11 @@ public class AuthService {
 
         user.setPassword(hashed);
 
-        user.setRole(user_service.collection.Role.valueOf(request.getRole()));
+        try {
+            user.setRole(Role.valueOf(request.getRole().toUpperCase()));
+        } catch (IllegalArgumentException e) {
+            throw new InvalidUserRequestException("Role must be one of: SELLER, BUYER");
+        }
 
         User savedUser = userRepository.save(user);
 

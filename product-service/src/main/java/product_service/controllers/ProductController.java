@@ -2,8 +2,9 @@ package product_service.controllers;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 import product_service.dto.ProductDto;
@@ -22,17 +23,10 @@ public class ProductController {
         return productService.getProductById(productId);
     }
 
-    @PostMapping
-    public ProductDto createProduct(@RequestBody RequestProduct productData) {
-        return productService.createProduct(productData);
+    @PostMapping("/create")
+    public ResponseEntity<ProductDto> createProduct(@RequestBody RequestProduct productData) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(productService.createProduct(productData));
     }
-
-    // @PostMapping(value = "/with-image", consumes = "multipart/form-data")
-    // public ProductDto createProductWithImage(
-    //         @RequestPart("product") RequestProduct productData,
-    //         @RequestPart("file") MultipartFile image) {
-    //     return productService.createProductWithImage(productData, image);
-    // }
 
     @PutMapping("/{productId}")
     public ProductDto updateProduct(@PathVariable String productId, @RequestBody RequestProduct updatedData) {
@@ -40,8 +34,9 @@ public class ProductController {
     }
 
     @DeleteMapping("/{productId}")
-    public void deleteProduct(@PathVariable String productId) {
+    public ResponseEntity<Void> deleteProduct(@PathVariable String productId) {
         productService.deleteProduct(productId);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping

@@ -2,6 +2,7 @@ package media_service.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import media_service.Exception.MediaNotFoundException;
 import media_service.Mapper.MediaMapper;
 import media_service.collections.Media;
 import media_service.dto.MediaResponseDto;
@@ -14,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.List;
 import java.util.Objects;
 
@@ -51,13 +51,13 @@ public class MediaService {
 
     public MediaResponseDto get(String id) {
         Media media = mediaRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Media not found"));
+                .orElseThrow(() -> new MediaNotFoundException("Media not found: " + id));
         return mediaMapper.toDto(media);
     }
 
     public void delete(String id, String userId) {
         Media media = mediaRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Media not found"));
+                .orElseThrow(() -> new MediaNotFoundException("Media not found: " + id));
         if (!Objects.equals(media.getUserId(), userId)) {
             throw new AccessDeniedException("You do not own this media");
         }
@@ -74,7 +74,7 @@ public class MediaService {
     public MediaResponseDto update(String id, MultipartFile file, String userId) {
         validateFile(file);
         Media media = mediaRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Media not found"));
+                .orElseThrow(() -> new MediaNotFoundException("Media not found: " + id));
         if (!Objects.equals(media.getUserId(), userId)) {
             throw new AccessDeniedException("You do not own this media");
         }
