@@ -13,11 +13,11 @@ import lombok.Data;
 @Data
 public class Product {
     @Id
-    String id;
-    String name;
-    String description;
-    Double price;
-    int quantity;
-    String UserId;
-    List<String> imageUrls = new ArrayList<>();
+    private String id;
+    private String name;
+    private String description;
+    private Double price;
+    private Integer quantity;
+    private String userId;
+    private List<String> imageUrls = new ArrayList<>();
 }
