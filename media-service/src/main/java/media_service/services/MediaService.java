@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import media_service.Mapper.MediaMapper;
 import media_service.collections.Media;
 import media_service.dto.MediaResponseDto;
+import media_service.kafka.ImageEventProducer;
 import media_service.reposetory.MediaRepository;
 import org.apache.tika.Tika;
 import org.springframework.security.access.AccessDeniedException;
@@ -14,6 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -23,6 +26,7 @@ public class MediaService {
     private final MediaRepository mediaRepository;
     private final FileStorageService fileStorageService;
     private final MediaMapper mediaMapper;
+    private final ImageEventProducer imageEventProducer;
 
     private static final long MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
@@ -41,6 +45,7 @@ public class MediaService {
         media.setUrl((String) uploadResult.get("secure_url"));
 
         Media saved = mediaRepository.save(media);
+        imageEventProducer.publishImageUploaded(productId, saved.getUrl());
         return mediaMapper.toDto(saved);
     }
 
@@ -53,11 +58,38 @@ public class MediaService {
     public void delete(String id, String userId) {
         Media media = mediaRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Media not found"));
-        if (!media.getUserId().equals(userId)) {
+        if (!Objects.equals(media.getUserId(), userId)) {
             throw new AccessDeniedException("You do not own this media");
         }
         fileStorageService.delete(media.getPublicId());
         mediaRepository.deleteById(id);
+    }
+
+    public List<MediaResponseDto> getAll() {
+        return mediaRepository.findAll().stream()
+                .map(mediaMapper::toDto)
+                .toList();
+    }
+
+    public MediaResponseDto update(String id, MultipartFile file, String userId) {
+        validateFile(file);
+        Media media = mediaRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Media not found"));
+        if (!Objects.equals(media.getUserId(), userId)) {
+            throw new AccessDeniedException("You do not own this media");
+        }
+
+        String oldPublicId = media.getPublicId();
+        Map<String, Object> uploadResult = fileStorageService.uploadFile(file,
+                media.getProductId() + "_" + userId + "_" + System.currentTimeMillis());
+        media.setContentType(file.getContentType());
+        media.setSize(file.getSize());
+        media.setPublicId((String) uploadResult.get("public_id"));
+        media.setUrl((String) uploadResult.get("secure_url"));
+        Media saved = mediaRepository.save(media);
+        fileStorageService.delete(oldPublicId);
+        imageEventProducer.publishImageUploaded(saved.getProductId(), saved.getUrl());
+        return mediaMapper.toDto(saved);
     }
 
     private void validateFile(MultipartFile file) {
