@@ -3,8 +3,6 @@ package product_service.services;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
 import lombok.RequiredArgsConstructor;
 import product_service.Exception.InvalidProductRequestException;
 import product_service.Exception.ProductNotFoundException;
@@ -21,10 +19,8 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
-    // private final MediaClient mediaClient;
-
     public ProductDto getProductById(String productId) {
-        if (productId == null || productId.isEmpty()) {
+        if (productId == null || productId.isBlank()) {
             throw new InvalidProductRequestException("Product ID cannot be null or empty");
         }
         Product product = productRepository.findById(productId)
@@ -33,41 +29,43 @@ public class ProductService {
     }
 
     public ProductDto createProduct(RequestProduct productData) {
-        if (productData.getName() == null || productData.getName().isEmpty()) {
+        if (productData == null || productData.getName() == null || productData.getName().isBlank()) {
             throw new InvalidProductRequestException("Product name is required");
         }
-        if (productData.getPrice() <= 0) {
+        if (productData.getPrice() == null || productData.getPrice() <= 0) {
             throw new InvalidProductRequestException("Price must be greater than 0");
+        }
+        if (productData.getQuantity() == null || productData.getQuantity() < 0) {
+            throw new InvalidProductRequestException("Quantity cannot be negative");
         }
         Product product = productMapper.toEntity(productData);
         Product saved = productRepository.save(product);
         return productMapper.toDto(saved);
     }
 
-    // public ProductDto createProductWithImage(RequestProduct productData, MultipartFile image) {
-    //     Product product = productMapper.toEntity(productData);
-    //     Product saved = productRepository.save(product);
-
-    //     MediaClient.MediaResponse media = mediaClient.uploadImage(
-    //             image, saved.getId(), productData.getUserId());
-    //     saved.getImageUrls().add(media.getUrl());
-    //     return productMapper.toDto(productRepository.save(saved));
-    // }
-
     public ProductDto updateProduct(String productId, RequestProduct updatedData) {
+        if (updatedData == null) {
+            throw new InvalidProductRequestException("Product data is required");
+        }
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found: " + productId));
 
-        if (updatedData.getName() != null) {
+        if (updatedData.getName() != null && !updatedData.getName().isBlank()) {
             product.setName(updatedData.getName());
         }
         if (updatedData.getDescription() != null) {
             product.setDescription(updatedData.getDescription());
         }
-        if (updatedData.getPrice() != 0) {
+        if (updatedData.getPrice() != null) {
+            if (updatedData.getPrice() <= 0) {
+                throw new InvalidProductRequestException("Price must be greater than 0");
+            }
             product.setPrice(updatedData.getPrice());
         }
-        if (updatedData.getQuantity() != 0) {
+        if (updatedData.getQuantity() != null) {
+            if (updatedData.getQuantity() < 0) {
+                throw new InvalidProductRequestException("Quantity cannot be negative");
+            }
             product.setQuantity(updatedData.getQuantity());
         }
 
@@ -88,9 +86,14 @@ public class ProductService {
     }
 
     public ProductDto addImageUrl(String productId, String url) {
+        if (url == null || url.isBlank()) {
+            throw new InvalidProductRequestException("Image URL is required");
+        }
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found: " + productId));
-        product.getImageUrls().add(url);
+        if (!product.getImageUrls().contains(url)) {
+            product.getImageUrls().add(url);
+        }
         Product saved = productRepository.save(product);
         return productMapper.toDto(saved);
     }
