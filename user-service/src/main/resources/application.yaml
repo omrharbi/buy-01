@@ -6,7 +6,7 @@ spring:
     name: user-service
   data:
     mongodb:
-      uri: mongodb://localhost:27017/user_service
+      uri: mongodb://root:password@localhost:27017/user_service?authSource=admin
 
 eureka:
   client:
@@ -16,3 +16,7 @@ eureka:
     fetch-registry: true
   instance:
     prefer-ip-address: true
+
+jwt:
+  secret: ${JWT_SECRET:change-this-dev-only-secret-please-32bytes-min}
+  expiration-ms: 86400000

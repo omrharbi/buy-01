@@ -1,11 +1,9 @@
 package product_service.Exception;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.BAD_REQUEST)
-public class InvalidProductRequestException extends RuntimeException {
+public class InvalidProductRequestException extends ApiException {
     public InvalidProductRequestException(String message) {
-        super(message);
+        super(HttpStatus.BAD_REQUEST, message);
     }
 }
