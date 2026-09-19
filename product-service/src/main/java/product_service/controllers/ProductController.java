@@ -3,8 +3,10 @@ package product_service.controllers;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 import product_service.dto.ProductDto;
@@ -23,9 +25,12 @@ public class ProductController {
         return productService.getProductById(productId);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<ProductDto> createProduct(@RequestBody RequestProduct productData) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(productService.createProduct(productData));
+    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ProductDto> createProduct(
+            @ModelAttribute RequestProduct productData,
+            @RequestParam(value = "images", required = false) List<MultipartFile> images) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(productService.createProductWithImages(productData, images));
     }
 
     @PutMapping("/{productId}")

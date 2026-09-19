@@ -4,9 +4,8 @@ server:
 spring:
   application:
     name: user-service
-  data:
-    mongodb:
-      uri: mongodb://root:password@localhost:27017/user_service?authSource=admin
+  mongodb:
+    uri: mongodb://root:password@localhost:27020/user_service?authSource=admin
 
 eureka:
   client:
