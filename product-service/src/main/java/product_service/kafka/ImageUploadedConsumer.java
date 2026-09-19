@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+import product_service.Exception.ProductNotFoundException;
 import product_service.events.ImageUploadedEvent;
 import product_service.services.ProductService;
 
@@ -20,6 +21,10 @@ public class ImageUploadedConsumer {
             log.warn("Ignoring invalid image uploaded event");
             return;
         }
-        productService.addImageUrl(event.getProductId(), event.getImageUrl());
+        try {
+            productService.addImageUrl(event.getProductId(), event.getImageUrl());
+        } catch (ProductNotFoundException e) {
+            log.warn("Ignoring image event for missing product {}", event.getProductId());
+        }
     }
 }

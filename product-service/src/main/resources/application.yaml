@@ -4,9 +4,12 @@ server:
 spring:
   application:
     name: product-service
-  data:
-    mongodb:
-      uri: mongodb://root:password@localhost:27018/product-service-db?authSource=admin
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 25MB
+  mongodb:
+    uri: mongodb://root:password@localhost:27018/product-service-db?authSource=admin
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
