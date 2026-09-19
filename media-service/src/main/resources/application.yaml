@@ -4,9 +4,8 @@ server:
 spring:
   application:
     name: media-service
-  data:
-    mongodb:
-      uri: mongodb://root:password@localhost:27019/media-service-db?authSource=admin
+  mongodb:
+    uri: mongodb://root:password@localhost:27019/media-service-db?authSource=admin
   servlet:
     multipart:
       enabled: true

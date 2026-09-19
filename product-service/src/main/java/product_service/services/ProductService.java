@@ -1,9 +1,17 @@
 package product_service.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.RequiredArgsConstructor;
+import product_service.client.MediaClient;
 import product_service.Exception.InvalidProductRequestException;
 import product_service.Exception.ProductNotFoundException;
 import product_service.Mapper.ProductMapper;
@@ -19,6 +27,9 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
+    private final MediaClient mediaClient;
+    private final MongoTemplate mongoTemplate;
+
     public ProductDto getProductById(String productId) {
         if (productId == null || productId.isBlank()) {
             throw new InvalidProductRequestException("Product ID cannot be null or empty");
@@ -41,6 +52,34 @@ public class ProductService {
         Product product = productMapper.toEntity(productData);
         Product saved = productRepository.save(product);
         return productMapper.toDto(saved);
+    }
+
+    public ProductDto createProductWithImages(RequestProduct productData, List<MultipartFile> images) {
+        List<MultipartFile> files = images == null ? List.of()
+                : images.stream().filter(f -> f != null && !f.isEmpty()).toList();
+
+        if (!files.isEmpty() && (productData.getUserId() == null || productData.getUserId().isBlank())) {
+            throw new InvalidProductRequestException("userId is required to upload images");
+        }
+
+        ProductDto created = createProduct(productData);
+        if (files.isEmpty()) {
+            return created;
+        }
+
+        List<String> uploadedMediaIds = new ArrayList<>();
+        try {
+            for (MultipartFile file : files) {
+                MediaClient.MediaInfo media = mediaClient.upload(file, created.getId(), productData.getUserId());
+                uploadedMediaIds.add(media.id());
+                addImageUrl(created.getId(), media.url());
+            }
+        } catch (RuntimeException e) {
+            uploadedMediaIds.forEach(id -> mediaClient.delete(id, productData.getUserId()));
+            productRepository.deleteById(created.getId());
+            throw e;
+        }
+        return getProductById(created.getId());
     }
 
     public ProductDto updateProduct(String productId, RequestProduct updatedData) {
@@ -89,12 +128,13 @@ public class ProductService {
         if (url == null || url.isBlank()) {
             throw new InvalidProductRequestException("Image URL is required");
         }
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found: " + productId));
-        if (!product.getImageUrls().contains(url)) {
-            product.getImageUrls().add(url);
+        if (!productRepository.existsById(productId)) {
+            throw new ProductNotFoundException("Product not found: " + productId);
         }
-        Product saved = productRepository.save(product);
-        return productMapper.toDto(saved);
+        mongoTemplate.updateFirst(
+                Query.query(Criteria.where("id").is(productId)),
+                new Update().addToSet("imageUrls", url),
+                Product.class);
+        return getProductById(productId);
     }
 }
