@@ -21,7 +21,7 @@ import user_service.security.JwtService;
 @RequiredArgsConstructor
 public class AuthService {
 
-    final UserRepository userRepository;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
@@ -29,7 +29,7 @@ public class AuthService {
 
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
-
+        System.out.println("User found: " + request.getPassword() + ", Role: " + request.getPassword());
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new InvalidCredentialsException("Invalid email or password");
         }
