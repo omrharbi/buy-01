@@ -14,7 +14,7 @@ A small e-commerce backend built as Spring Boot microservices. Clients talk only
               user-service          product-service  media-service
                  :8081                  :8082           :8083
                    |                      |  ^            |
-               MongoDB :27017       MongoDB :27018   MongoDB :27019
+               MongoDB :27020       MongoDB :27018   MongoDB :27019
                                           |  |            |
                                           |  +-- Kafka ---+   (topic: image-uploaded-topic)
                                           v
@@ -102,14 +102,14 @@ Rules: `role` is `SELLER` or `BUYER`; `name` is 3-15 characters; `password` is 6
 
 | Method | Path | Notes | Success |
 |---|---|---|---|
-| POST | `/api/products/create` | `{name, description, price, quantity, userId}` | 201 |
+| POST | `/api/products/create` | multipart form: `name`, `description`, `price`, `quantity`, `userId`, optional `images` (repeat for several files). Creates the product and uploads the images | 201 |
 | GET | `/api/products` | list all | 200 |
 | GET | `/api/products/{id}` | | 200 |
 | PUT | `/api/products/{id}` | partial update | 200 |
 | DELETE | `/api/products/{id}` | | 204 |
 | PUT | `/api/products/{id}/images?url=...` | add an image URL manually | 200 |
 
-Rules: `name` required, `price` > 0, `quantity` >= 0.
+Rules: `name` required, `price` > 0, `quantity` >= 0, `userId` required when sending images. Images are max 5 MB each. Products are created only through this multipart call; images can also be added later with `/media/images/upload`.
 
 ### Media
 
@@ -145,17 +145,13 @@ curl -X POST localhost:8080/api/auth/register -H "Content-Type: application/json
 curl -X POST localhost:8080/api/auth/login -H "Content-Type: application/json" \
   -d '{"email":"alice@example.com","password":"secret123"}'
 
-# create a product (use the user id from register)
-curl -X POST localhost:8080/api/products/create -H "Content-Type: application/json" \
-  -d '{"name":"Cool Mug","description":"A mug","price":9.99,"quantity":10,"userId":"<USER_ID>"}'
-
-# upload an image for it
-curl -X POST localhost:8080/media/images/upload \
-  -F "file=@image.png" -F "productId=<PRODUCT_ID>" -F "userId=<USER_ID>"
-
-# a couple of seconds later the product has the image URL
-curl localhost:8080/api/products/<PRODUCT_ID>
+# create a product with its images in one call (use the user id from register)
+curl -X POST localhost:8080/api/products/create \
+  -F name="Cool Mug" -F description="A mug" -F price=9.99 -F quantity=10 -F userId=<USER_ID> \
+  -F images=@image1.png -F images=@image2.png
 ```
+
+The response contains the product with `imageUrls` filled in. If any image is rejected, nothing is kept (the product and already-uploaded images are rolled back).
 
 ## Current limitations
 
