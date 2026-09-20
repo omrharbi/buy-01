@@ -1,0 +1,95 @@
+<header class="head">
+  <div>
+    <h1 class="display-md">Seller dashboard</h1>
+    <p class="lede">{{ auth.user()?.name }} — everything you've listed.</p>
+  </div>
+  <a routerLink="/seller/products/new" class="cta">
+    <ui-button variant="primary" icon="plus-lg">New product</ui-button>
+  </a>
+</header>
+
+@if (loading()) {
+  <div class="skeleton" aria-hidden="true"></div>
+} @else if (products().length) {
+  <div class="wrap">
+    <table>
+      <caption class="sr-only">Your products, with price, image count and status</caption>
+      <thead>
+        <tr>
+          <th scope="col" class="col-thumb"><span class="sr-only">Image</span></th>
+          <th scope="col">Product</th>
+          <th scope="col" class="num">Price</th>
+          <th scope="col" class="num">Stock</th>
+          <th scope="col" class="num">Images</th>
+          <th scope="col">Status</th>
+          <th scope="col" class="col-actions"><span class="sr-only">Actions</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (product of products(); track product.id) {
+          <tr>
+            <td>
+              @if (product.imageUrls.length) {
+                <img class="thumb" [src]="product.imageUrls[0]" alt="" />
+              } @else {
+                <span class="thumb thumb--empty"><ui-icon name="image" [size]="16" /></span>
+              }
+            </td>
+            <td>
+              <p class="name">{{ product.name }}</p>
+              <p class="id code">{{ product.id }}</p>
+            </td>
+            <td class="num price">{{ product.price.toFixed(2) }} MAD</td>
+            <td class="num sub">{{ product.quantity }}</td>
+            <td class="num sub">{{ product.imageUrls.length }}</td>
+            <td>
+              @if (!product.imageUrls.length) {
+                <ui-badge variant="warning">No images</ui-badge>
+              } @else if (product.quantity === 0) {
+                <ui-badge variant="neutral">Out of stock</ui-badge>
+              } @else {
+                <ui-badge variant="success">Published</ui-badge>
+              }
+            </td>
+            <td class="col-actions">
+              <a class="icon-action" [routerLink]="['/seller/products', product.id, 'edit']">
+                <ui-icon name="pencil-square" [size]="15" [label]="'Edit ' + product.name" />
+              </a>
+              <button class="icon-action icon-action--danger" type="button" (click)="askDelete(product)">
+                <ui-icon name="trash3" [size]="15" [label]="'Delete ' + product.name" />
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+} @else {
+  <ui-empty-state
+    icon="box-seam"
+    title="You haven't listed anything yet"
+    body="Add a product, attach up to six images, and it appears in the public catalog straight away.">
+    <a routerLink="/seller/products/new" class="cta">
+      <ui-button variant="primary">Add your first product</ui-button>
+    </a>
+  </ui-empty-state>
+}
+
+@if (pendingDelete(); as product) {
+  <div class="scrim" (click)="cancelDelete()"></div>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="delete-title">
+    <h2 id="delete-title" class="display-sm">Delete "{{ product.name }}"?</h2>
+    <p class="dialog-body">
+      This removes it from the public catalog for good.
+      @if (product.imageUrls.length) {
+        Its {{ product.imageUrls.length }} images stay in your library.
+      }
+    </p>
+    <div class="dialog-actions">
+      <ui-button variant="secondary" (click)="cancelDelete()">Cancel</ui-button>
+      <ui-button variant="danger" [loading]="deleting()" loadingLabel="Deleting…" (click)="confirmDelete()">
+        Delete product
+      </ui-button>
+    </div>
+  </div>
+}

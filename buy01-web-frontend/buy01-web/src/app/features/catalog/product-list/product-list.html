@@ -1,0 +1,23 @@
+<header class="head">
+  <h1 class="display-md">Browse products</h1>
+  <p class="lede">Everything listed by sellers on the marketplace.</p>
+</header>
+
+@if (loading()) {
+  <div class="grid" aria-hidden="true">
+    @for (slot of skeletons; track slot) {
+      <div class="skeleton"></div>
+    }
+  </div>
+} @else if (products().length) {
+  <div class="grid">
+    @for (product of products(); track product.id) {
+      <ui-product-card [product]="product" />
+    }
+  </div>
+} @else {
+  <ui-empty-state
+    icon="inbox"
+    title="Nothing here yet"
+    body="No products have been listed on the marketplace so far. Check back soon." />
+}

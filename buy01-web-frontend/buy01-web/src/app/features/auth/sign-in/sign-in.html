@@ -1,0 +1,69 @@
+<div class="auth">
+  <section class="panel">
+    <h1 class="display-md title">Welcome back</h1>
+    <p class="lede">Sign in to manage your catalog, or to pick up where you left off.</p>
+
+    @if (expired) {
+      <ui-alert variant="info" title="Your session expired">
+        <p>Sign in again to keep going. Nothing you uploaded was lost.</p>
+      </ui-alert>
+    }
+
+    @if (failure(); as problem) {
+      @if (problem.status !== 400) {
+        <ui-alert variant="danger" title="Couldn't sign you in">
+          <p>{{ problem.message }}</p>
+        </ui-alert>
+      }
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <ui-form-field
+        label="Email"
+        fieldId="email"
+        [control]="form.controls.email"
+        [serverError]="fieldError('email')">
+        <input
+          id="email"
+          class="control"
+          type="email"
+          autocomplete="email"
+          formControlName="email"
+          aria-describedby="email-message"
+          [attr.aria-invalid]="form.controls.email.invalid && form.controls.email.touched ? true : null" />
+      </ui-form-field>
+
+      <ui-form-field
+        label="Password"
+        fieldId="password"
+        [control]="form.controls.password"
+        [serverError]="fieldError('password')">
+        <input
+          id="password"
+          class="control"
+          type="password"
+          autocomplete="current-password"
+          formControlName="password"
+          aria-describedby="password-message" />
+      </ui-form-field>
+
+      <ui-button
+        type="submit"
+        variant="primary"
+        size="lg"
+        [loading]="submitting()"
+        loadingLabel="Signing in…">
+        Sign in
+      </ui-button>
+    </form>
+
+    <p class="switch">
+      New here? <a routerLink="/sign-up">Create an account</a>
+    </p>
+
+    <p class="demo">
+      Demo accounts: <code class="code">seller&#64;buy01.test</code> or
+      <code class="code">client&#64;buy01.test</code>, password <code class="code">password123</code>.
+    </p>
+  </section>
+</div>

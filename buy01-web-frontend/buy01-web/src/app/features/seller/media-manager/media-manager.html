@@ -1,0 +1,55 @@
+<header class="head">
+  <div>
+    <h1 class="display-md">Your images</h1>
+    <p class="lede">Every image you've uploaded, linked to a product or not.</p>
+  </div>
+  <a routerLink="/seller/dashboard" class="cta"><ui-button variant="secondary">Back to catalog</ui-button></a>
+</header>
+
+<section class="panel">
+  <ui-image-uploader label="Upload images" [max]="24" (changed)="onUploaded()" />
+</section>
+
+@if (loading()) {
+  <div class="grid" aria-hidden="true">
+    @for (slot of [0, 1, 2, 3]; track slot) {
+      <div class="skeleton"></div>
+    }
+  </div>
+} @else if (items().length) {
+  <ul class="grid">
+    @for (item of items(); track item.id) {
+      <li class="tile">
+        <img [src]="item.url" [alt]="item.fileName" />
+        <div class="tile-meta">
+          <p class="name">{{ item.fileName }}</p>
+          <p class="caption">{{ readable(item.size) }} · {{ item.contentType }}</p>
+        </div>
+        <button class="remove" type="button" (click)="askDelete(item)">
+          <ui-icon name="trash3" [size]="14" [label]="'Delete ' + item.fileName" />
+        </button>
+      </li>
+    }
+  </ul>
+} @else {
+  <ui-empty-state
+    icon="images"
+    title="No images yet"
+    body="Upload one above, or add images while you're creating a product — they land here either way." />
+}
+
+@if (pendingDelete(); as item) {
+  <div class="scrim" (click)="cancelDelete()"></div>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="delete-media-title">
+    <h2 id="delete-media-title" class="display-sm">Delete {{ item.fileName }}?</h2>
+    <p class="dialog-body">
+      Any product still using this image will show a placeholder instead. This can't be undone.
+    </p>
+    <div class="dialog-actions">
+      <ui-button variant="secondary" (click)="cancelDelete()">Cancel</ui-button>
+      <ui-button variant="danger" [loading]="deleting()" loadingLabel="Deleting…" (click)="confirmDelete()">
+        Delete image
+      </ui-button>
+    </div>
+  </div>
+}
