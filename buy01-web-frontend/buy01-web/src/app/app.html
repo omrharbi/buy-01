@@ -1,0 +1,60 @@
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="header">
+  <div class="bar">
+    <a class="brand" routerLink="/products">
+      <span class="mark" aria-hidden="true"></span>
+      <span class="wordmark">Buy-01</span>
+    </a>
+
+    <nav class="nav" aria-label="Main">
+      <a routerLink="/products" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }">
+        <ui-icon name="grid-3x2-gap" [size]="16" />
+        Browse
+      </a>
+      @if (auth.isSeller()) {
+        <a routerLink="/seller/dashboard" routerLinkActive="is-active">
+          <ui-icon name="shop" [size]="16" />
+          Dashboard
+        </a>
+        <a routerLink="/seller/media" routerLinkActive="is-active">
+          <ui-icon name="images" [size]="16" />
+          Images
+        </a>
+      }
+    </nav>
+
+    <div class="account">
+      <button class="icon-button" type="button" (click)="themes.toggle()">
+        <ui-icon
+          name="circle-half"
+          [size]="16"
+          [label]="themes.theme() === 'dark' ? 'Switch to the light theme' : 'Switch to the dark theme'" />
+      </button>
+
+      @if (auth.user(); as user) {
+        <a class="identity" routerLink="/profile">
+          <ui-avatar [name]="user.name" [src]="user.avatarUrl" size="sm" [decorative]="true" />
+          <span class="name">{{ user.name }}</span>
+        </a>
+        <ui-badge [variant]="user.role === 'SELLER' ? 'role-seller' : 'role-client'">
+          {{ user.role }}
+        </ui-badge>
+        <button class="icon-button" type="button" (click)="auth.logout('manual')">
+          <ui-icon name="box-arrow-right" [size]="16" label="Sign out" />
+        </button>
+      } @else {
+        <a class="sign-in" routerLink="/sign-in">
+          <ui-icon name="box-arrow-in-right" [size]="16" />
+          Sign in
+        </a>
+      }
+    </div>
+  </div>
+</header>
+
+<main id="main" class="main">
+  <router-outlet />
+</main>
+
+<ui-toast-host />

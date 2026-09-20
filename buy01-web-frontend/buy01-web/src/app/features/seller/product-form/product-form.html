@@ -1,0 +1,82 @@
+<a class="back" routerLink="/seller/dashboard">Back to your catalog</a>
+
+<h1 class="display-md title">{{ editing ? 'Edit product' : 'New product' }}</h1>
+
+@if (failure(); as problem) {
+  @if (problem.status === 404) {
+    <ui-alert variant="danger" title="That product doesn't exist any more">
+      <p>It may have been deleted. Go back to your catalog to see what's there.</p>
+    </ui-alert>
+  } @else if (problem.status === 403) {
+    <ui-alert variant="danger" title="This product belongs to another seller">
+      <p>You can only edit products you created.</p>
+    </ui-alert>
+  } @else if (problem.status !== 400) {
+    <ui-alert variant="danger" title="Couldn't save this product">
+      <p>{{ problem.message }}</p>
+    </ui-alert>
+  }
+}
+
+<form class="layout" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <section class="panel">
+    <h2 class="heading-md">Details</h2>
+
+    <ui-form-field
+      label="Product title"
+      fieldId="p-name"
+      hint="Shown on the product card. Up to 80 characters."
+      [control]="form.controls.name"
+      [serverError]="fieldError('name')">
+      <input id="p-name" class="control" type="text" formControlName="name" aria-describedby="p-name-message" />
+    </ui-form-field>
+
+    <ui-form-field
+      label="Description"
+      fieldId="p-description"
+      hint="Plain text. No links."
+      [control]="form.controls.description"
+      [serverError]="fieldError('description')">
+      <textarea id="p-description" class="control" rows="5" formControlName="description"
+                aria-describedby="p-description-message"></textarea>
+    </ui-form-field>
+
+    <div class="row">
+      <ui-form-field
+        label="Price (MAD)"
+        fieldId="p-price"
+        hint="Must be greater than 0."
+        [control]="form.controls.price"
+        [serverError]="fieldError('price')">
+        <input id="p-price" class="control" type="number" min="0.01" step="0.01" formControlName="price"
+               aria-describedby="p-price-message" />
+      </ui-form-field>
+
+      <ui-form-field
+        label="Quantity in stock"
+        fieldId="p-quantity"
+        hint="0 means out of stock."
+        [control]="form.controls.quantity"
+        [serverError]="fieldError('quantity')">
+        <input id="p-quantity" class="control" type="number" min="0" step="1" formControlName="quantity"
+               aria-describedby="p-quantity-message" />
+      </ui-form-field>
+    </div>
+  </section>
+
+  <section class="panel">
+    <ui-image-uploader [existing]="imageUrls()" (changed)="onImagesChanged($event)" />
+  </section>
+
+  <div class="actions">
+    <a routerLink="/seller/dashboard"><ui-button variant="secondary">Cancel</ui-button></a>
+    <ui-button
+      type="submit"
+      variant="primary"
+      [loading]="saving()"
+      [loadingLabel]="editing ? 'Saving…' : 'Publishing…'"
+      (click)="submit()">
+      {{ editing ? 'Save product' : 'Publish product' }}
+    </ui-button>
+  </div>
+</form>

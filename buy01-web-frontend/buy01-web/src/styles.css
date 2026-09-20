@@ -1,0 +1,36 @@
+/* 1. The design system: fonts, both themes, scales, type classes. */
+@import "./assets/design-system/tokens.css";
+
+/* 2. Tailwind. */
+@import "tailwindcss";
+
+/* 3. The token -> utility mapping, so bg-surface-100 and text-brand exist. */
+@import "./assets/design-system/theme.css";
+
+/* Page defaults. Everything else is a token or a utility. */
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--surface-000);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 23px;
+  -webkit-font-smoothing: antialiased;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* Screen-reader-only text, used by icon-only controls. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

@@ -1,0 +1,153 @@
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--ink-muted);
+  text-decoration: none;
+  font-size: 13px;
+  line-height: 20px;
+  margin-bottom: var(--space-4);
+}
+
+.back ui-icon {
+  transform: rotate(180deg);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: var(--space-8);
+  align-items: start;
+}
+
+.well {
+  aspect-ratio: 4 / 3;
+  background: var(--surface-200);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+
+.well img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--ink-muted);
+}
+
+.thumbs {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.thumb {
+  width: 64px;
+  height: 64px;
+  padding: 0;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--surface-200);
+  cursor: pointer;
+}
+
+.thumb.is-active {
+  border-color: var(--brand);
+  border-width: 2px;
+}
+
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.detail {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.detail h1 {
+  margin: 0;
+}
+
+.seller {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--ink-muted);
+}
+
+.price {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 24px;
+  line-height: 28px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.description {
+  margin: 0;
+  color: var(--ink);
+}
+
+.meta {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-1) var(--space-4);
+  margin: var(--space-2) 0 0;
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.meta dt {
+  color: var(--ink-muted);
+}
+
+.meta dd {
+  margin: 0;
+}
+
+.code {
+  font-family: var(--font-mono);
+}
+
+.owner-actions a {
+  text-decoration: none;
+}
+
+.skeleton {
+  border-radius: var(--radius-lg);
+  background: var(--surface-200);
+}
+
+.skeleton--image {
+  aspect-ratio: 4 / 3;
+}
+
+.skeleton--text {
+  height: 280px;
+}
+
+@media (max-width: 860px) {
+  .layout {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+}

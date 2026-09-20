@@ -1,0 +1,49 @@
+<h1 class="display-md title">Your profile</h1>
+
+@if (auth.user(); as user) {
+  <div class="layout">
+    <section class="panel">
+      <h2 class="heading-md">Account</h2>
+
+      <div class="identity">
+        <ui-avatar [name]="user.name" [src]="avatarUrl()" size="lg" [decorative]="true" />
+        <div>
+          <p class="name">{{ user.name }}</p>
+          <p class="email code">{{ user.email }}</p>
+        </div>
+        <ui-badge [variant]="user.role === 'SELLER' ? 'role-seller' : 'role-client'">{{ user.role }}</ui-badge>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <ui-form-field
+          label="Display name"
+          fieldId="profile-name"
+          hint="Clients see this on your products."
+          [control]="form.controls.name"
+          [serverError]="fieldError('name')">
+          <input id="profile-name" class="control" type="text" formControlName="name"
+                 aria-describedby="profile-name-message" />
+        </ui-form-field>
+
+        <ui-button type="submit" variant="primary" [loading]="saving()" loadingLabel="Saving…" (click)="submit()">
+          Save profile
+        </ui-button>
+      </form>
+    </section>
+
+    @if (user.role === 'SELLER') {
+      <section class="panel">
+        <ui-image-uploader label="Profile photo" [max]="1" (changed)="onAvatarChanged($event)" />
+        <p class="caption">Square images work best — anything else is cropped to a circle.</p>
+      </section>
+    } @else {
+      <section class="panel panel--note">
+        <h2 class="heading-md">Want to sell?</h2>
+        <p class="body">
+          Client accounts browse and buy. Seller accounts also list products and manage images.
+          The role is set when the account is created.
+        </p>
+      </section>
+    }
+  </div>
+}
