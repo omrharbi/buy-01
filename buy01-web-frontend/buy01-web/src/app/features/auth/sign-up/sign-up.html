@@ -1,0 +1,74 @@
+<div class="auth">
+  <section class="panel">
+    <h1 class="display-md title">Create an account</h1>
+    <p class="lede">Browse as a client, or open a seller account and list your first product.</p>
+
+    @if (failure(); as problem) {
+      @if (problem.status !== 400 || !problem.fields) {
+        <ui-alert variant="danger" title="Couldn't create your account">
+          <p>{{ problem.message }}</p>
+        </ui-alert>
+      }
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <ui-form-field
+        label="Display name"
+        fieldId="name"
+        hint="This is the name clients see on your products."
+        [control]="form.controls.name"
+        [serverError]="fieldError('name')">
+        <input id="name" class="control" type="text" autocomplete="name" formControlName="name"
+               aria-describedby="name-message" />
+      </ui-form-field>
+
+      <ui-form-field
+        label="Email"
+        fieldId="signup-email"
+        [control]="form.controls.email"
+        [serverError]="fieldError('email')">
+        <input id="signup-email" class="control" type="email" autocomplete="email" formControlName="email"
+               aria-describedby="signup-email-message" />
+      </ui-form-field>
+
+      <fieldset class="field-set">
+        <legend class="legend">I'm signing up as</legend>
+        <div class="choices">
+          <label class="choice" [class.is-picked]="form.controls.role.value === 'CLIENT'">
+            <input type="radio" name="role" value="CLIENT"
+                   [checked]="form.controls.role.value === 'CLIENT'" (change)="pick('CLIENT')" />
+            <span>
+              <span class="choice-title">Client</span>
+              <span class="choice-note">Browse and buy from sellers.</span>
+            </span>
+          </label>
+          <label class="choice" [class.is-picked]="form.controls.role.value === 'SELLER'">
+            <input type="radio" name="role" value="SELLER"
+                   [checked]="form.controls.role.value === 'SELLER'" (change)="pick('SELLER')" />
+            <span>
+              <span class="choice-title">Seller</span>
+              <span class="choice-note">List products and manage their images.</span>
+            </span>
+          </label>
+        </div>
+      </fieldset>
+
+      <ui-form-field
+        label="Password"
+        fieldId="signup-password"
+        hint="At least 8 characters."
+        [control]="form.controls.password"
+        [serverError]="fieldError('password')">
+        <input id="signup-password" class="control" type="password" autocomplete="new-password"
+               formControlName="password" aria-describedby="signup-password-message" />
+      </ui-form-field>
+
+      <ui-button type="submit" variant="primary" size="lg" [loading]="submitting()"
+                 loadingLabel="Creating your account…">
+        Create account
+      </ui-button>
+    </form>
+
+    <p class="switch">Already have an account? <a routerLink="/sign-in">Sign in</a></p>
+  </section>
+</div>

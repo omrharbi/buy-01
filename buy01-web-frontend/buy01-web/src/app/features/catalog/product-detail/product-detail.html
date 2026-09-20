@@ -1,0 +1,89 @@
+@if (loading()) {
+  <div class="layout" aria-hidden="true">
+    <div class="skeleton skeleton--image"></div>
+    <div class="skeleton skeleton--text"></div>
+  </div>
+} @else if (product(); as item) {
+  <a class="back" routerLink="/products">
+    <ui-icon name="chevron-right" [size]="14" />
+    All products
+  </a>
+
+  <div class="layout">
+    <div class="gallery">
+      <div class="well">
+        @if (item.imageUrls.length) {
+          <img [src]="item.imageUrls[active()]" [alt]="item.name" />
+        } @else {
+          <span class="fallback">
+            <ui-icon name="image" [size]="40" />
+            <span class="caption">No image yet</span>
+          </span>
+        }
+      </div>
+
+      @if (item.imageUrls.length > 1) {
+        <div class="thumbs">
+          @for (url of item.imageUrls; track url; let i = $index) {
+            <button
+              class="thumb"
+              type="button"
+              [class.is-active]="active() === i"
+              (click)="active.set(i)">
+              <img [src]="url" [alt]="'View image ' + (i + 1) + ' of ' + item.name" />
+            </button>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="detail">
+      <h1 class="heading-lg">{{ item.name }}</h1>
+
+      <div class="seller">
+        <ui-avatar [name]="item.sellerName" size="sm" [decorative]="true" />
+        <span>{{ item.sellerName }}</span>
+        <ui-badge variant="role-seller">SELLER</ui-badge>
+      </div>
+
+      <p class="price">{{ item.price.toFixed(2) }} MAD</p>
+
+      @if (item.quantity > 0) {
+        <ui-badge variant="success">{{ item.quantity }} in stock</ui-badge>
+      } @else {
+        <ui-badge variant="warning">Out of stock</ui-badge>
+      }
+
+      <p class="description">{{ item.description }}</p>
+
+      <dl class="meta">
+        <dt>Product id</dt>
+        <dd class="code">{{ item.id }}</dd>
+        <dt>Images</dt>
+        <dd>{{ item.imageUrls.length }}</dd>
+      </dl>
+
+      @if (isOwner) {
+        <div class="owner-actions">
+          <a [routerLink]="['/seller/products', item.id, 'edit']">
+            <ui-button variant="secondary" icon="pencil-square">Edit this product</ui-button>
+          </a>
+        </div>
+      }
+    </div>
+  </div>
+} @else if (missing()) {
+  <ui-empty-state
+    icon="box-seam"
+    title="That product doesn't exist any more"
+    body="It may have been removed by the seller.">
+    <a routerLink="/products"><ui-button variant="secondary">Back to products</ui-button></a>
+  </ui-empty-state>
+} @else {
+  <ui-empty-state
+    icon="exclamation-triangle-fill"
+    title="Couldn't load this product"
+    body="Something went wrong on our side. Try again in a moment.">
+    <a routerLink="/products"><ui-button variant="secondary">Back to products</ui-button></a>
+  </ui-empty-state>
+}

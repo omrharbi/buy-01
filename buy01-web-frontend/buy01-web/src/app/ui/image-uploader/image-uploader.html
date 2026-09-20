@@ -1,0 +1,85 @@
+<section class="uploader">
+  <h3 class="heading">{{ label() }}</h3>
+
+  <label
+    class="zone"
+    [class.is-dragging]="dragging()"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave()"
+    (drop)="onDrop($event)">
+    <ui-icon name="upload" [size]="26" />
+    <span class="zone-text">Drop images here, or <span class="link">browse</span></span>
+    <span class="caption">{{ rules.hint }}</span>
+    <input
+      class="sr-only"
+      type="file"
+      multiple
+      [accept]="rules.accept"
+      [disabled]="remaining <= 0"
+      (change)="onPicked($event)" />
+  </label>
+
+  @if (remaining <= 0) {
+    <p class="caption">That's {{ max() }} images. Remove one to add another.</p>
+  }
+
+  @if (rejections().length) {
+    <ui-alert
+      variant="danger"
+      [title]="rejections().length === 1 ? 'That file wasn\'t added' : rejections().length + ' files weren\'t added'">
+      <p>
+        @for (reason of rejections(); track reason) {
+          {{ reason }}<br />
+        }
+      </p>
+    </ui-alert>
+    <button class="text-button" type="button" (click)="clearRejections()">Dismiss</button>
+  }
+
+  <ul class="queue">
+    @for (url of urls(); track url) {
+      <li class="item">
+        <img class="thumb" [src]="url" alt="" />
+        <div class="meta">
+          <p class="name">Attached image</p>
+          <p class="caption">Linked to this product</p>
+        </div>
+        <ui-icon name="check-circle-fill" [size]="16" class="ok" />
+        <button class="remove" type="button" (click)="removeUrl(url)">
+          <ui-icon name="x-lg" [size]="12" label="Remove this image" />
+        </button>
+      </li>
+    }
+
+    @for (item of queue(); track item.localId) {
+      @if (item.status === 'uploading') {
+        <li class="item">
+          <img class="thumb" [src]="item.previewUrl" alt="" />
+          <div class="meta">
+            <p class="name">{{ item.file.name }}</p>
+            <div class="track"><span class="fill" [style.width.%]="item.progress"></span></div>
+          </div>
+          <span class="caption">{{ item.progress }}%</span>
+        </li>
+      }
+      @if (item.status === 'failed') {
+        <li class="item item--failed">
+          <img class="thumb" [src]="item.previewUrl" alt="" />
+          <div class="meta">
+            <p class="name">{{ item.file.name }}</p>
+            <p class="caption error">{{ item.error }}</p>
+          </div>
+          <button class="remove" type="button" (click)="dismissFailed(item.localId)">
+            <ui-icon name="x-lg" [size]="12" [label]="'Dismiss ' + item.file.name" />
+          </button>
+        </li>
+      }
+    }
+  </ul>
+
+  @if (uploadedThisSession()) {
+    <p class="caption note">
+      Uploaded images stay in your media library even if you don't save this product.
+    </p>
+  }
+</section>
