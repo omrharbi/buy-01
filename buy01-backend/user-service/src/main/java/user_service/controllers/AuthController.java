@@ -18,12 +18,12 @@ import user_service.services.AuthService;
 
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping({"/auth", "/api/auth"})
 @RequiredArgsConstructor
 class AuthController{
-    final AuthService authService;
 
-    @PostMapping("/login")
+    final AuthService authService;
+    @PostMapping("/login")          
     public ResponseEntity<AuthResponse> loginUser(@RequestBody @Valid LoginRequest request){
         AuthResponse authResponse = authService.loginService(request);
         return ResponseEntity.ok(authResponse);
