@@ -2,9 +2,11 @@ package media_service.controller;
 
 import lombok.RequiredArgsConstructor;
 import media_service.dto.MediaResponseDto;
+import media_service.security.JwtPrincipal;
 import media_service.services.MediaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
@@ -19,10 +21,15 @@ public class MediaController {
     @PostMapping("/upload")
     public ResponseEntity<MediaResponseDto> uploadImage(
             @RequestParam("file") MultipartFile file,
-            @RequestParam("productId") String productId,
-            @RequestParam("userId") String userId) {
-        MediaResponseDto dto = mediaService.uploadImage(file, productId, userId);
+            @RequestParam(value = "productId", required = false) String productId,
+            @AuthenticationPrincipal JwtPrincipal principal) {
+        MediaResponseDto dto = mediaService.uploadImage(file, productId, principal.id());
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<List<MediaResponseDto>> getMine(@AuthenticationPrincipal JwtPrincipal principal) {
+        return ResponseEntity.ok(mediaService.getMine(principal.id()));
     }
 
     @GetMapping("/{id}")
@@ -39,15 +46,13 @@ public class MediaController {
     public ResponseEntity<MediaResponseDto> update(
             @PathVariable String id,
             @RequestParam("file") MultipartFile file,
-            @RequestParam("userId") String userId) {
-        return ResponseEntity.ok(mediaService.update(id, file, userId));
+            @AuthenticationPrincipal JwtPrincipal principal) {
+        return ResponseEntity.ok(mediaService.update(id, file, principal.id()));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(
-            @PathVariable String id,
-            @RequestParam("userId") String userId) {
-        mediaService.delete(id, userId);
+    public ResponseEntity<Void> delete(@PathVariable String id, @AuthenticationPrincipal JwtPrincipal principal) {
+        mediaService.delete(id, principal.id());
         return ResponseEntity.noContent().build();
     }
 }
