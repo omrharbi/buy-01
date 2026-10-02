@@ -6,5 +6,6 @@ import lombok.Data;
 public class AuthResponse {
 
     private String token;
+    private long expiresIn;
     private UserDto user;
 }

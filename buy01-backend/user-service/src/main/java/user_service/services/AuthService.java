@@ -29,7 +29,6 @@ public class AuthService {
 
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
-        System.out.println("User found: " + request.getPassword() + ", Role: " + request.getPassword());
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new InvalidCredentialsException("Invalid email or password");
         }
@@ -37,6 +36,7 @@ public class AuthService {
         AuthResponse response = new AuthResponse();
         response.setUser(mapToDTO(user));
         response.setToken(jwtService.generateToken(user));
+        response.setExpiresIn(jwtService.getExpirationSeconds());
 
         return response;
     }
@@ -57,7 +57,7 @@ public class AuthService {
         try {
             user.setRole(Role.valueOf(request.getRole().toUpperCase()));
         } catch (IllegalArgumentException e) {
-            throw new InvalidUserRequestException("Role must be one of: SELLER, BUYER");
+            throw new InvalidUserRequestException("Role must be one of: SELLER, CLIENT");
         }
 
         User savedUser = userRepository.save(user);
@@ -71,6 +71,7 @@ public class AuthService {
         dto.setName(user.getName());
         dto.setEmail(user.getEmail());
         dto.setRole(user.getRole());
+        dto.setAvatarUrl(user.getAvatarUrl());
         return dto;
     }
 }

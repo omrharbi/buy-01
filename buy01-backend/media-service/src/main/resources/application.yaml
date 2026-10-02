@@ -31,3 +31,6 @@ cloudinary:
   cloud-name: "jjwxm4oa"
   api-key: ${CLOUDINARY_API_KEY}
   api-secret: ${CLOUDINARY_API_SECRET}
+
+jwt:
+  secret: ${JWT_SECRET:change-this-dev-only-secret-please-32bytes-min}

@@ -137,6 +137,11 @@ function route(request: HttpRequest<unknown>): Observable<HttpEvent<unknown>> | 
   // ---- auth
   if (method === 'POST' && url === '/auth/register') {
     if (state.users.some((user) => user.email === body['email'])) {
+
+      state.users.some((user) => {
+        console.log(user.email === body['email'], "testestest");
+        
+      })
       return fail(400, 'Some fields need fixing.', { email: 'That email is already registered.' });
     }
     const user: User & { password: string } = {
