@@ -34,8 +34,8 @@ public class ProfileService {
             user.setRole(updatedUserDto.getRole());
         }
 
-        if (updatedUserDto.getAvatar() != null) {
-            user.setAvatar(updatedUserDto.getAvatar());
+        if (updatedUserDto.getAvatarUrl() != null) {
+            user.setAvatarUrl(updatedUserDto.getAvatarUrl());
         }
 
         User updatedUser = userRepository.save(user);
@@ -49,6 +49,7 @@ public class ProfileService {
         dto.setName(user.getName());
         dto.setEmail(user.getEmail());
         dto.setRole(user.getRole());
+        dto.setAvatarUrl(user.getAvatarUrl());
         return dto;
     }
     

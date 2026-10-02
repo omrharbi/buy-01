@@ -1,9 +1,4 @@
 import { environment } from '../../../environments/environment.development';
-
-/**
- * Every URL the app calls, in one place. The gateway fronts all three services, so the
- * base is a single origin and CORS is configured there.
- */
 const base = environment.apiBase;
 
 export const API = {

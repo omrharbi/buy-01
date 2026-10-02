@@ -1,5 +1,6 @@
 package product_service.collections;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +19,8 @@ public class Product {
     private String description;
     private Double price;
     private Integer quantity;
-    private String userId;
+    private String sellerId;
+    private String sellerName;
     private List<String> imageUrls = new ArrayList<>();
+    private Instant createdAt;
 }

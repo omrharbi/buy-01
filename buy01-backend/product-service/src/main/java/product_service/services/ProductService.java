@@ -1,25 +1,20 @@
 package product_service.services;
 
-import java.util.ArrayList;
+import java.time.Instant;
 import java.util.List;
 
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
-import product_service.client.MediaClient;
 import product_service.Exception.InvalidProductRequestException;
+import product_service.Exception.ProductForbiddenException;
 import product_service.Exception.ProductNotFoundException;
 import product_service.Mapper.ProductMapper;
 import product_service.collections.Product;
-// import product_service.client.MediaClient;
 import product_service.dto.ProductDto;
 import product_service.dto.RequestProduct;
 import product_service.repositories.ProductRepository;
+import product_service.security.JwtPrincipal;
 
 @Service
 @RequiredArgsConstructor
@@ -27,67 +22,48 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
-    private final MediaClient mediaClient;
-    private final MongoTemplate mongoTemplate;
 
     public ProductDto getProductById(String productId) {
         if (productId == null || productId.isBlank()) {
             throw new InvalidProductRequestException("Product ID cannot be null or empty");
         }
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found: " + productId));
+        Product product = findOrThrow(productId);
         return productMapper.toDto(product);
     }
 
-    public ProductDto createProduct(RequestProduct productData) {
-        if (productData == null || productData.getName() == null || productData.getName().isBlank()) {
-            throw new InvalidProductRequestException("Product name is required");
-        }
-        if (productData.getPrice() == null || productData.getPrice() <= 0) {
-            throw new InvalidProductRequestException("Price must be greater than 0");
-        }
-        if (productData.getQuantity() == null || productData.getQuantity() < 0) {
-            throw new InvalidProductRequestException("Quantity cannot be negative");
-        }
+    public List<ProductDto> getAllProducts() {
+        return productRepository.findAll().stream()
+                .map(productMapper::toDto)
+                .toList();
+    }
+
+    public List<ProductDto> getMyProducts(JwtPrincipal principal) {
+        return productRepository.findBySellerId(principal.id()).stream()
+                .map(productMapper::toDto)
+                .toList();
+    }
+
+    public ProductDto createProduct(RequestProduct productData, JwtPrincipal principal) {
+        validate(productData);
+
         Product product = productMapper.toEntity(productData);
+        product.setSellerId(principal.id());
+        product.setSellerName(principal.name());
+        product.setCreatedAt(Instant.now());
+        if (product.getImageUrls() == null) {
+            product.setImageUrls(new java.util.ArrayList<>());
+        }
+
         Product saved = productRepository.save(product);
         return productMapper.toDto(saved);
     }
 
-    public ProductDto createProductWithImages(RequestProduct productData, List<MultipartFile> images) {
-        List<MultipartFile> files = images == null ? List.of()
-                : images.stream().filter(f -> f != null && !f.isEmpty()).toList();
-
-        if (!files.isEmpty() && (productData.getUserId() == null || productData.getUserId().isBlank())) {
-            throw new InvalidProductRequestException("userId is required to upload images");
-        }
-
-        ProductDto created = createProduct(productData);
-        if (files.isEmpty()) {
-            return created;
-        }
-
-        List<String> uploadedMediaIds = new ArrayList<>();
-        try {
-            for (MultipartFile file : files) {
-                MediaClient.MediaInfo media = mediaClient.upload(file, created.getId(), productData.getUserId());
-                uploadedMediaIds.add(media.id());
-                addImageUrl(created.getId(), media.url());
-            }
-        } catch (RuntimeException e) {
-            uploadedMediaIds.forEach(id -> mediaClient.delete(id, productData.getUserId()));
-            productRepository.deleteById(created.getId());
-            throw e;
-        }
-        return getProductById(created.getId());
-    }
-
-    public ProductDto updateProduct(String productId, RequestProduct updatedData) {
+    public ProductDto updateProduct(String productId, RequestProduct updatedData, JwtPrincipal principal) {
         if (updatedData == null) {
             throw new InvalidProductRequestException("Product data is required");
         }
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found: " + productId));
+        Product product = findOrThrow(productId);
+        requireOwner(product, principal);
 
         if (updatedData.getName() != null && !updatedData.getName().isBlank()) {
             product.setName(updatedData.getName());
@@ -107,34 +83,52 @@ public class ProductService {
             }
             product.setQuantity(updatedData.getQuantity());
         }
+        if (updatedData.getImageUrls() != null) {
+            product.setImageUrls(updatedData.getImageUrls());
+        }
 
         Product saved = productRepository.save(product);
         return productMapper.toDto(saved);
     }
 
-    public void deleteProduct(String productId) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found: " + productId));
+    public void deleteProduct(String productId, JwtPrincipal principal) {
+        Product product = findOrThrow(productId);
+        requireOwner(product, principal);
         productRepository.delete(product);
     }
 
-    public List<ProductDto> getAllProducts() {
-        return productRepository.findAll().stream()
-                .map(productMapper::toDto)
-                .toList();
-    }
-
-    public ProductDto addImageUrl(String productId, String url) {
+    /** Called by the Kafka listener when an image is uploaded against a known product. */
+    public void addImageUrl(String productId, String url) {
         if (url == null || url.isBlank()) {
             throw new InvalidProductRequestException("Image URL is required");
         }
-        if (!productRepository.existsById(productId)) {
-            throw new ProductNotFoundException("Product not found: " + productId);
+        Product product = findOrThrow(productId);
+        if (!product.getImageUrls().contains(url)) {
+            product.getImageUrls().add(url);
+            productRepository.save(product);
         }
-        mongoTemplate.updateFirst(
-                Query.query(Criteria.where("id").is(productId)),
-                new Update().addToSet("imageUrls", url),
-                Product.class);
-        return getProductById(productId);
+    }
+
+    private Product findOrThrow(String productId) {
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found: " + productId));
+    }
+
+    private void requireOwner(Product product, JwtPrincipal principal) {
+        if (!product.getSellerId().equals(principal.id())) {
+            throw new ProductForbiddenException("You do not own this product");
+        }
+    }
+
+    private void validate(RequestProduct productData) {
+        if (productData == null || productData.getName() == null || productData.getName().isBlank()) {
+            throw new InvalidProductRequestException("Product name is required");
+        }
+        if (productData.getPrice() == null || productData.getPrice() <= 0) {
+            throw new InvalidProductRequestException("Price must be greater than 0");
+        }
+        if (productData.getQuantity() == null || productData.getQuantity() < 0) {
+            throw new InvalidProductRequestException("Quantity cannot be negative");
+        }
     }
 }

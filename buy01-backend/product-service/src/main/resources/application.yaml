@@ -4,10 +4,6 @@ server:
 spring:
   application:
     name: product-service
-  servlet:
-    multipart:
-      max-file-size: 5MB
-      max-request-size: 25MB
   mongodb:
     uri: mongodb://root:password@localhost:27018/product-service-db?authSource=admin
   kafka:
@@ -28,3 +24,6 @@ eureka:
     fetch-registry: true
   instance:
     prefer-ip-address: true
+
+jwt:
+  secret: ${JWT_SECRET:change-this-dev-only-secret-please-32bytes-min}

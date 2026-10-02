@@ -22,7 +22,7 @@ public class RegisterRequest {
     String password;
     
     @Size(max = 255, message = "Avatar must be less than 255 characters")
-    String avatar;
+    String avatarUrl;
 
     @NotBlank(message = "Role is required")
     String role;

@@ -8,6 +8,6 @@ public class UserDto {
     String id;
     String email;
     String name;
-    String avatar;
+    String avatarUrl;
     Role role;
 }

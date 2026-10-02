@@ -20,5 +20,5 @@ public class User {
 
     private Role role;
 
-    private String  avatar;
+    private String avatarUrl;
 }

@@ -27,7 +27,11 @@ export class AuthService {
   readonly isSeller = computed(() => this.userSignal()?.role === 'SELLER');
 
   register(request: RegisterRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(API.auth.register, request).pipe(tap((res) => this.accept(res)));
+    return this.http.post<AuthResponse>(API.auth.register, request).pipe(tap((res) => {
+      console.log(this.accept(res),"---------------------");
+      return this.accept(res);
+      
+    }));
   }
 
   login(credentials: Credentials): Observable<AuthResponse> {
