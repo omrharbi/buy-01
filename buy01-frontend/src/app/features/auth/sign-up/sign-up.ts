@@ -49,9 +49,12 @@ export class SignUp {
     this.submitting.set(true);
 
     this.auth.register(this.form.getRawValue()).subscribe({
-      next: (response) => {
-        void this.router.navigateByUrl(response.user.role === 'SELLER' ? '/seller/dashboard' : '/products');
-      },
+      next: (user) => {
+      this.submitting.set(false);
+      void this.router.navigateByUrl(
+        user.role === 'SELLER' ? '/seller/dashboard' : '/products'
+      );
+     },
       error: (failure: FailedRequest) => {
         this.submitting.set(false);
         this.failure.set(failure);

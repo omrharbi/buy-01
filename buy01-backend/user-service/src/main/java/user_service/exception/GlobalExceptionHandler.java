@@ -14,26 +14,31 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ApiException.class)
-    public ResponseEntity<ApiError> handleApiException(ApiException e, HttpServletRequest request) {
-        return build(e.getStatus(), e.getMessage(), request, null);
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<ApiError> userExists(UserAlreadyExistsException ex, HttpServletRequest request) {
+        return build(HttpStatus.CONFLICT, ex.getMessage(), Map.of("email", ex.getMessage()), request);
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ApiError> invalidCredentials(InvalidCredentialsException ex, HttpServletRequest request) {
+        return build(HttpStatus.UNAUTHORIZED, ex.getMessage(), Map.of(), request);
+    }
+
+    @ExceptionHandler(InvalidUserRequestException.class)
+    public ResponseEntity<ApiError> invalidRequest(InvalidUserRequestException ex, HttpServletRequest request) {
+        return build(HttpStatus.BAD_REQUEST, ex.getMessage(), Map.of("role", ex.getMessage()), request);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException e, HttpServletRequest request) {
+    public ResponseEntity<ApiError> validation(MethodArgumentNotValidException ex, HttpServletRequest request) {
         Map<String, String> fields = new HashMap<>();
-        e.getBindingResult().getFieldErrors()
-                .forEach(fieldError -> fields.put(fieldError.getField(), fieldError.getDefaultMessage()));
-        return build(HttpStatus.BAD_REQUEST, "Validation failed", request, fields);
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiError> handleUnexpected(Exception e, HttpServletRequest request) {
-        return build(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error: " + e.getMessage(), request, null);
+        ex.getBindingResult().getFieldErrors()
+          .forEach(e -> fields.putIfAbsent(e.getField(), e.getDefaultMessage()));
+        return build(HttpStatus.BAD_REQUEST, "Please fix the highlighted fields", fields, request);
     }
 
     private ResponseEntity<ApiError> build(
-            HttpStatus status, String message, HttpServletRequest request, Map<String, String> fields) {
+            HttpStatus status, String message, Map<String, String> fields, HttpServletRequest request) {
         ApiError body = new ApiError(
                 Instant.now(), status.value(), status.getReasonPhrase(), message, request.getRequestURI(), fields);
         return ResponseEntity.status(status).body(body);
