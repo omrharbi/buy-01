@@ -154,7 +154,7 @@ function route(request: HttpRequest<unknown>): Observable<HttpEvent<unknown>> | 
     };
     state.users.push(user);
     save(state);
-    return ok({ token: issueToken(user), expiresIn: 43200, user: publicUser(user) });
+    return ok(publicUser(user));
   }
 
   if (method === 'POST' && url === '/auth/login') {

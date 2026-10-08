@@ -9,10 +9,6 @@ import { AuthResponse, Credentials, ProfileUpdate, RegisterRequest, Role, User }
 const TOKEN_KEY = 'buy01.token';
 const USER_KEY = 'buy01.user';
 
-/**
- * Holds the session. The token is the only thing the services trust; the cached user is a
- * convenience for rendering and is refreshed from GET /me whenever the app starts.
- */
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
@@ -26,12 +22,8 @@ export class AuthService {
   readonly isAuthenticated = computed(() => this.tokenSignal() !== null);
   readonly isSeller = computed(() => this.userSignal()?.role === 'SELLER');
 
-  register(request: RegisterRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(API.auth.register, request).pipe(tap((res) => {
-      console.log(this.accept(res),"---------------------");
-      return this.accept(res);
-      
-    }));
+  register(request: RegisterRequest): Observable<User> {
+    return this.http.post<User>(API.auth.register, request);
   }
 
   login(credentials: Credentials): Observable<AuthResponse> {
