@@ -23,7 +23,7 @@ import user_service.services.AuthService;
 class AuthController{
 
     final AuthService authService;
-    @PostMapping("/login")          
+    @PostMapping("/login")
     public ResponseEntity<AuthResponse> loginUser(@RequestBody @Valid LoginRequest request){
         AuthResponse authResponse = authService.loginService(request);
         return ResponseEntity.ok(authResponse);

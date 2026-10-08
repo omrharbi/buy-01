@@ -1,3 +1,6 @@
+server:
+  port: 8080   # make sure no other service uses 8080
+
 spring:
   application:
     name: api-gateway
@@ -6,9 +9,23 @@ spring:
     gateway:
       server:
         webflux:
+          globalcors:
+            add-to-simple-url-handler-mapping: true
+            cors-configurations:
+              '[/**]':
+                allowedOrigins: "http://localhost:4200"
+                allowedMethods: [GET, POST, PUT, DELETE, PATCH, OPTIONS]
+                allowedHeaders: "*"
+                allowCredentials: true
+                maxAge: 3600
+
+          default-filters:
+            - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
+
           discovery:
             locator:
               enabled: true
+
           routes:
             - id: user-service
               uri: lb://USER-SERVICE
