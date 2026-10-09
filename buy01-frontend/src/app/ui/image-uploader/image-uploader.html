@@ -52,6 +52,18 @@
     }
 
     @for (item of queue(); track item.localId) {
+      @if (item.status === 'pending') {
+        <li class="item">
+          <img class="thumb" [src]="item.previewUrl" alt="" />
+          <div class="meta">
+            <p class="name">{{ item.file.name }}</p>
+            <p class="caption">Uploads when you save the product</p>
+          </div>
+          <button class="remove" type="button" (click)="dismiss(item.localId)">
+            <ui-icon name="x-lg" [size]="12" [label]="'Remove ' + item.file.name" />
+          </button>
+        </li>
+      }
       @if (item.status === 'uploading') {
         <li class="item">
           <img class="thumb" [src]="item.previewUrl" alt="" />
@@ -69,7 +81,7 @@
             <p class="name">{{ item.file.name }}</p>
             <p class="caption error">{{ item.error }}</p>
           </div>
-          <button class="remove" type="button" (click)="dismissFailed(item.localId)">
+          <button class="remove" type="button" (click)="dismiss(item.localId)">
             <ui-icon name="x-lg" [size]="12" [label]="'Dismiss ' + item.file.name" />
           </button>
         </li>
