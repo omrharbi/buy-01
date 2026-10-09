@@ -1,0 +1,30 @@
+# Build output
+target/
+build/
+bin/
+out/
+*.class
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+**/application-local.yml
+**/application-local.properties
+
+# Logs
+*.log
+logs/
+
+# IDE
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.vscode/
+
+# OS
+.DS_Store

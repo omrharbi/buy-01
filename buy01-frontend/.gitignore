@@ -1,4 +1,30 @@
-# Node / Angular
+# Dependencies
 node_modules/
+
+# Build output
 dist/
 .angular/
+tmp/
+out-tsc/
+
+# Testing
+coverage/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# IDE
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
