@@ -12,10 +12,6 @@ import { Button } from '../../../ui/button/button';
 import { FormField } from '../../../ui/form-field/form-field';
 import { ImageUploader } from '../../../ui/image-uploader/image-uploader';
 
-/**
- * Create and edit in one component: the fields are the same, and so are the rules. The route
- * decides which — `/seller/products/new` has no id, `/seller/products/:id/edit` does.
- */
 @Component({
   selector: 'app-product-form',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -29,7 +25,6 @@ export class ProductForm implements OnInit {
   private readonly toasts = inject(ToastService);
   private readonly fb = inject(FormBuilder);
 
-  /** Present only on the edit route. */
   readonly id = input<string | undefined>(undefined);
 
   protected readonly loading = signal(false);
