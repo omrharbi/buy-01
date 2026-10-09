@@ -16,7 +16,8 @@ export const API = {
   products: {
     list: `${base}/products`,
     byId: (id: string) => `${base}/products/${id}`,
-    mine: `${base}/products/me`,
+    mine: `${base}/products/my`,
+    create: `${base}/products/create`,
   },
 
   media: {

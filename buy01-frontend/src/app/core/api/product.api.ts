@@ -5,10 +5,6 @@ import { Observable } from 'rxjs';
 import { API } from '../config/api.config';
 import { Product, ProductInput } from '../models/product.model';
 
-/**
- * The Product service. The two GETs are public; every write requires a seller token and is
- * checked against `sellerId` on the server — this class never decides ownership itself.
- */
 @Injectable({ providedIn: 'root' })
 export class ProductApi {
   private readonly http = inject(HttpClient);
@@ -27,7 +23,7 @@ export class ProductApi {
   }
 
   create(input: ProductInput): Observable<Product> {
-    return this.http.post<Product>(API.products.list, input);
+    return this.http.post<Product>(API.products.create, input);
   }
 
   update(id: string, input: ProductInput): Observable<Product> {
