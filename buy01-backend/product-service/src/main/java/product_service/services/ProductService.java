@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import lombok.RequiredArgsConstructor;
 import product_service.Exception.InvalidProductRequestException;
 import product_service.Exception.ProductForbiddenException;
 import product_service.Exception.ProductNotFoundException;
@@ -17,11 +16,15 @@ import product_service.repositories.ProductRepository;
 import product_service.security.JwtPrincipal;
 
 @Service
-@RequiredArgsConstructor
 public class ProductService {
 
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
+
+    public ProductService(ProductRepository productRepository, ProductMapper productMapper) {
+        this.productRepository = productRepository;
+        this.productMapper = productMapper;
+    }
 
     public ProductDto getProductById(String productId) {
         if (productId == null || productId.isBlank()) {
