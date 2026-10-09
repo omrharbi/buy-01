@@ -14,14 +14,14 @@ export const API = {
   },
 
   products: {
-    list: `${base}/products`,
-    byId: (id: string) => `${base}/products/${id}`,
+    list: `${base}/products/list`,
+    byId: (id: string) => `${base}/products/view/${id}`,
     mine: `${base}/products/my`,
     create: `${base}/products/create`,
   },
 
   media: {
-    upload: `${base}/media/images`,
+    upload: `${base}/media/images/upload`,
     byId: (id: string) => `${base}/media/images/${id}`,
     mine: `${base}/media/images/me`,
   },

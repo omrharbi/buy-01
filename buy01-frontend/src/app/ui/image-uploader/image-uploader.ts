@@ -27,9 +27,16 @@ export class ImageUploader {
   readonly existing = input<string[]>([]);
   readonly max = input<number>(MEDIA_RULES.maxFilesPerProduct);
   readonly label = input('Product images');
+  /**
+   * Hold picked files instead of uploading them. The product form uses this: an image is
+   * uploaded only once its product exists, so it can be sent with the product's id.
+   */
+  readonly deferred = input(false);
 
   /** The full, ordered list of attached image URLs, emitted on every change. */
   readonly changed = output<string[]>();
+  /** In deferred mode, the files waiting to be uploaded, emitted on every change. */
+  readonly pendingChanged = output<File[]>();
 
   protected readonly rules = MEDIA_RULES;
   protected readonly urls = signal<string[]>([]);
@@ -44,7 +51,8 @@ export class ImageUploader {
   }
 
   protected get remaining(): number {
-    return this.max() - this.urls().length - this.queue().filter((item) => item.status === 'uploading').length;
+    const inFlight = this.queue().filter((item) => item.status === 'uploading' || item.status === 'pending');
+    return this.max() - this.urls().length - inFlight.length;
   }
 
   protected onDragOver(event: DragEvent): void {
@@ -93,27 +101,41 @@ export class ImageUploader {
     }
 
     this.rejections.set(rejected);
-    accepted.forEach((file) => this.upload(file));
+    if (this.deferred()) {
+      accepted.forEach((file) => this.enqueue(file, 'pending'));
+      this.emitPending();
+    } else {
+      accepted.forEach((file) => this.upload(file));
+    }
   }
 
-  private upload(file: File): void {
+  private enqueue(file: File, status: QueuedUpload['status']): QueuedUpload {
     const item: QueuedUpload = {
       localId: `${file.name}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
       file,
       previewUrl: URL.createObjectURL(file),
       progress: 0,
-      status: 'uploading',
+      status,
       media: null,
       error: null,
     };
     this.queue.update((list) => [...list, item]);
+    return item;
+  }
+
+  private upload(file: File): void {
+    const item = this.enqueue(file, 'uploading');
 
     this.media.upload(file).subscribe({
       next: (event) => {
         if (event.type === 'progress') {
           this.patch(item.localId, { progress: event.value });
         } else {
-          this.patch(item.localId, { status: 'done', progress: 100, media: event.media });
+          this.patch(item.localId, {
+            status: 'done',
+            progress: 100,
+            media: event.media,
+          });
           this.urls.update((list) => [...list, event.media.url]);
           this.uploadedThisSession.set(true);
           this.emit();
@@ -142,7 +164,8 @@ export class ImageUploader {
     this.emit();
   }
 
-  protected dismissFailed(localId: string): void {
+  /** Drops a failed or still-pending file from the queue. */
+  protected dismiss(localId: string): void {
     this.queue.update((list) => {
       const item = list.find((candidate) => candidate.localId === localId);
       if (item) {
@@ -150,6 +173,9 @@ export class ImageUploader {
       }
       return list.filter((candidate) => candidate.localId !== localId);
     });
+    if (this.deferred()) {
+      this.emitPending();
+    }
   }
 
   protected clearRejections(): void {
@@ -162,5 +188,13 @@ export class ImageUploader {
 
   private emit(): void {
     this.changed.emit(this.urls());
+  }
+
+  private emitPending(): void {
+    this.pendingChanged.emit(
+      this.queue()
+        .filter((item) => item.status === 'pending')
+        .map((item) => item.file),
+    );
   }
 }

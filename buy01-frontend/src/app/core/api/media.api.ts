@@ -17,9 +17,13 @@ export type UploadEvent =
 export class MediaApi {
   private readonly http = inject(HttpClient);
 
-  upload(file: File): Observable<UploadEvent> {
+  /** With a `productId`, the Media service links the image and tells the Product service. */
+  upload(file: File, productId?: string): Observable<UploadEvent> {
     const form = new FormData();
     form.append('file', file, file.name);
+    if (productId) {
+      form.append('productId', productId);
+    }
 
     return this.http
       .post<MediaRef>(API.media.upload, form, { reportProgress: true, observe: 'events' })

@@ -65,7 +65,11 @@
   </section>
 
   <section class="panel">
-    <ui-image-uploader [existing]="imageUrls()" (changed)="onImagesChanged($event)" />
+    <ui-image-uploader
+      [existing]="imageUrls()"
+      [deferred]="true"
+      (changed)="onImagesChanged($event)"
+      (pendingChanged)="onPendingChanged($event)" />
   </section>
 
   <div class="actions">
@@ -74,8 +78,7 @@
       type="submit"
       variant="primary"
       [loading]="saving()"
-      [loadingLabel]="editing ? 'Saving…' : 'Publishing…'"
-      (click)="submit()">
+      [loadingLabel]="editing ? 'Saving…' : 'Publishing…'">
       {{ editing ? 'Save product' : 'Publish product' }}
     </ui-button>
   </div>

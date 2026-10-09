@@ -27,7 +27,7 @@ public class SecurityConfig {
                         .authenticationEntryPoint(restAuthEntryPoint)
                         .accessDeniedHandler(restAuthEntryPoint))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.GET, "/products/me").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/products/my").authenticated()
                         .requestMatchers(HttpMethod.GET, "/products/**").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
