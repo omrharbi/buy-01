@@ -11,10 +11,6 @@ import { EmptyState } from '../../../ui/empty-state/empty-state';
 import { Icon } from '../../../ui/icon/icon';
 import { ImageUploader } from '../../../ui/image-uploader/image-uploader';
 
-/**
- * The seller's image library — everything they have uploaded, whether or not a product links
- * to it. This is where the orphans from an abandoned product form show up.
- */
 @Component({
   selector: 'app-media-manager',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -45,7 +41,6 @@ export class MediaManager implements OnInit {
     });
   }
 
-  /** The uploader posts straight to the service; reload so the grid shows what landed. */
   protected onUploaded(): void {
     this.load();
   }
