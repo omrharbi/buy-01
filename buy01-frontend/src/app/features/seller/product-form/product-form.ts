@@ -34,7 +34,6 @@ export class ProductForm implements OnInit {
   protected readonly saving = signal(false);
   protected readonly failure = signal<FailedRequest | null>(null);
   protected readonly imageUrls = signal<string[]>([]);
-  /** Picked files that are uploaded after the product is saved, with its id. */
   private readonly pendingFiles = signal<File[]>([]);
 
   protected readonly form = this.fb.nonNullable.group({
@@ -50,6 +49,8 @@ export class ProductForm implements OnInit {
 
   ngOnInit(): void {
     const id = this.id();
+    console.log(id, "ProductForm ngOnInit");
+    
     if (!id) {
       return;
     }
