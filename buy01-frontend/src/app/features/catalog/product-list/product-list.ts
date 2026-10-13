@@ -5,10 +5,6 @@ import { Product } from '../../../core/models/product.model';
 import { EmptyState } from '../../../ui/empty-state/empty-state';
 import { ProductCard } from '../../../ui/product-card/product-card';
 
-/**
- * The public catalog. No search and no filters — the subject does not ask for them, and an
- * empty toolbar reads as a broken feature.
- */
 @Component({
   selector: 'app-product-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
