@@ -9,10 +9,6 @@ export type UploadEvent =
   | { type: 'progress'; value: number }
   | { type: 'done'; media: MediaRef };
 
-/**
- * The Media service. Uploads report progress per file, because a person who picked six
- * images needs to see which one is still going.
- */
 @Injectable({ providedIn: 'root' })
 export class MediaApi {
   private readonly http = inject(HttpClient);
