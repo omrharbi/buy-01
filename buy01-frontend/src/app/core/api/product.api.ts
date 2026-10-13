@@ -17,7 +17,6 @@ export class ProductApi {
     return this.http.get<Product>(API.products.byId(id));
   }
 
-  /** The signed-in seller's own catalog. */
   mine(): Observable<Product[]> {
     return this.http.get<Product[]>(API.products.mine);
   }
@@ -27,10 +26,10 @@ export class ProductApi {
   }
 
   update(id: string, input: ProductInput): Observable<Product> {
-    return this.http.put<Product>(API.products.byId(id), input);
+    return this.http.put<Product>(API.products.update(id), input);
   }
 
   remove(id: string): Observable<void> {
-    return this.http.delete<void>(API.products.byId(id));
+    return this.http.delete<void>(API.products.remove(id));
   }
 }
