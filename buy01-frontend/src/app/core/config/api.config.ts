@@ -18,6 +18,8 @@ export const API = {
     byId: (id: string) => `${base}/products/view/${id}`,
     mine: `${base}/products/my`,
     create: `${base}/products/create`,
+    update: (id: string) => `${base}/products/update/${id}`,
+    remove: (id: string) => `${base}/products/delete/${id}`,
   },
 
   media: {
