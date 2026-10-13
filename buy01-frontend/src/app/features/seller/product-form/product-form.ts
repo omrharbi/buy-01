@@ -101,9 +101,6 @@ export class ProductForm implements OnInit {
 
     this.saving.set(true);
     const request = this.editing ? this.api.update(this.id()!, input) : this.api.create(input);
-
-    // The product is saved first; its images follow, each sent with the new product id.
-    // The Media service then tells the Product service (over Kafka) to attach the URL.
     request
       .pipe(
         switchMap((product) =>

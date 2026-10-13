@@ -18,6 +18,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -35,7 +36,7 @@ public class MediaService {
         validateFile(file);
 
         String publicId = (productId != null ? productId : "standalone") + "_" + ownerId + "_"
-                + System.currentTimeMillis();
+                + UUID.randomUUID();
         Map<String, Object> uploadResult = fileStorageService.uploadFile(file, publicId);
 
         Media media = new Media();
@@ -79,7 +80,7 @@ public class MediaService {
         String oldPublicId = media.getPublicId();
         Map<String, Object> uploadResult = fileStorageService.uploadFile(file,
                 (media.getProductId() != null ? media.getProductId() : "standalone") + "_" + ownerId + "_"
-                        + System.currentTimeMillis());
+                        + UUID.randomUUID());
         media.setFileName(file.getOriginalFilename());
         media.setContentType(file.getContentType());
         media.setSize(file.getSize());

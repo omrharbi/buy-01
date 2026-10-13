@@ -11,10 +11,6 @@ import { Button } from '../../../ui/button/button';
 import { EmptyState } from '../../../ui/empty-state/empty-state';
 import { Icon } from '../../../ui/icon/icon';
 
-/**
- * The seller's catalog. The only place in the app where edit and delete live, and the only
- * place that lists products by owner.
- */
 @Component({
   selector: 'app-dashboard',
   changeDetection: ChangeDetectionStrategy.OnPush,
