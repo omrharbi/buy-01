@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +34,7 @@ public class ProductController {
     }
 
     @GetMapping("/my")
+    @PreAuthorize("hasRole('SELLER')")
     public List<ProductDto> getMyProducts(@AuthenticationPrincipal JwtPrincipal principal) {
         return productService.getMyProducts(principal);
     }
@@ -43,12 +45,14 @@ public class ProductController {
     }
 
     @PostMapping("/create")
+    @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<ProductDto> createProduct(
             @RequestBody RequestProduct productData, @AuthenticationPrincipal JwtPrincipal principal) {
         return ResponseEntity.status(HttpStatus.CREATED).body(productService.createProduct(productData, principal));
     }
 
     @PutMapping("/update/{productId}")
+    @PreAuthorize("hasRole('SELLER')")
     public ProductDto updateProduct(
             @PathVariable String productId,
             @RequestBody RequestProduct updatedData,
@@ -57,6 +61,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/delete/{productId}")
+    @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<Void> deleteProduct(
             @PathVariable String productId, @AuthenticationPrincipal JwtPrincipal principal) {
         productService.deleteProduct(productId, principal);
