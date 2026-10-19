@@ -6,6 +6,7 @@ import media_service.security.JwtPrincipal;
 import media_service.services.MediaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,6 +20,7 @@ public class MediaController {
     private final MediaService mediaService;
 
     @PostMapping("/upload")
+    @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<MediaResponseDto> uploadImage(
             @RequestParam("file") MultipartFile file,
             @RequestParam(value = "productId", required = false) String productId,
@@ -28,6 +30,7 @@ public class MediaController {
     }
 
     @GetMapping("/me")
+    @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<List<MediaResponseDto>> getMine(@AuthenticationPrincipal JwtPrincipal principal) {
         return ResponseEntity.ok(mediaService.getMine(principal.id()));
     }
@@ -43,6 +46,7 @@ public class MediaController {
     }
 
     @PutMapping(value = "/{id}", consumes = "multipart/form-data")
+    @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<MediaResponseDto> update(
             @PathVariable String id,
             @RequestParam("file") MultipartFile file,
@@ -51,6 +55,7 @@ public class MediaController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<Void> delete(@PathVariable String id, @AuthenticationPrincipal JwtPrincipal principal) {
         mediaService.delete(id, principal.id());
         return ResponseEntity.noContent().build();
