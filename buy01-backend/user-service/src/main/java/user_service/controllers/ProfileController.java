@@ -1,5 +1,6 @@
 package user_service.controllers;
 
+import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
+import user_service.dto.ProfileUpdateRequest;
 import user_service.dto.UserDto;
 import user_service.services.ProfileService;
 
@@ -24,7 +26,9 @@ public class ProfileController {
     }
 
     @PutMapping
-    public UserDto updateMyProfile(Authentication authentication, @RequestBody UserDto updatedUserDto) {
-        return userService.updateCurrentUser(authentication.getName(), updatedUserDto);
+    public UserDto updateMyProfile(
+            Authentication authentication,
+            @RequestBody @Valid ProfileUpdateRequest updateRequest) {
+        return userService.updateCurrentUser(authentication.getName(), updateRequest);
     }
 }

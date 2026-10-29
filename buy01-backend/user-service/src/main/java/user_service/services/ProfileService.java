@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import user_service.collection.User;
+import user_service.dto.ProfileUpdateRequest;
 import user_service.dto.UserDto;
 import user_service.exception.UserNotFoundException;
 import user_service.repositories.UserRepository;
@@ -20,22 +21,15 @@ public class ProfileService {
         return mapToDTO(user);
     }
 
-    public UserDto updateCurrentUser(String id, UserDto updatedUserDto) {
+    public UserDto updateCurrentUser(String id, ProfileUpdateRequest updateRequest) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + id));
 
-        if (updatedUserDto.getName() != null) {
-            user.setName(updatedUserDto.getName());
+        if (updateRequest.getName() != null) {
+            user.setName(updateRequest.getName());
         }
-        if (updatedUserDto.getEmail() != null) {
-            user.setEmail(updatedUserDto.getEmail());
-        } 
-        if (updatedUserDto.getRole() != null) {
-            user.setRole(updatedUserDto.getRole());
-        }
-
-        if (updatedUserDto.getAvatarUrl() != null) {
-            user.setAvatarUrl(updatedUserDto.getAvatarUrl());
+        if (updateRequest.getAvatarUrl() != null) {
+            user.setAvatarUrl(updateRequest.getAvatarUrl());
         }
 
         User updatedUser = userRepository.save(user);
