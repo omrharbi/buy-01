@@ -78,10 +78,21 @@ Each service is configured in `src/main/resources/application.yaml`.
 | MongoDB URIs | each service | Match the credentials in `Docker-db/docker-compose.yml` (`root` / `password`) |
 | `jwt.secret` | user-service | Override with the `JWT_SECRET` environment variable (32+ characters). The default is for local dev only |
 | `jwt.expiration-ms` | user-service | Token lifetime, default 24 hours |
-| `cloudinary.*` | media-service | Cloud name, API key and API secret |
+| `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` | media-service | Required environment variables; no configuration defaults |
 | Multipart limit | media-service | 5 MB per file |
 
-> Do not commit real secrets. Move the Cloudinary API secret out of `application.yaml` into an environment variable before publishing the repository.
+Set the three Cloudinary environment variables in the media-service process environment before
+starting it. The service fails to start if any required value is missing. Do not commit real
+credentials. Previously committed credentials must be rotated with Cloudinary; removing them
+from the current configuration does not remove them from Git history.
+
+For local development, export the values in the shell that will run Media:
+
+```bash
+export CLOUDINARY_CLOUD_NAME=your-cloud-name
+export CLOUDINARY_API_KEY=your-api-key
+export CLOUDINARY_API_SECRET=your-api-secret
+```
 
 ## API reference
 
