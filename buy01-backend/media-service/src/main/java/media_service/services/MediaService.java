@@ -60,12 +60,6 @@ public class MediaService {
         return mediaMapper.toDto(findOrThrow(id));
     }
 
-    public List<MediaResponseDto> getAll() {
-        return mediaRepository.findAll().stream()
-                .map(mediaMapper::toDto)
-                .toList();
-    }
-
     public List<MediaResponseDto> getMine(String ownerId) {
         return mediaRepository.findByOwnerId(ownerId).stream()
                 .map(mediaMapper::toDto)

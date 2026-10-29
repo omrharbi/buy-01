@@ -33,7 +33,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/media/images/**").hasRole("SELLER")
                         .requestMatchers(HttpMethod.PUT, "/media/images/**").hasRole("SELLER")
                         .requestMatchers(HttpMethod.DELETE, "/media/images/**").hasRole("SELLER")
-                        .requestMatchers(HttpMethod.GET, "/media/images/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/media/images/*").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

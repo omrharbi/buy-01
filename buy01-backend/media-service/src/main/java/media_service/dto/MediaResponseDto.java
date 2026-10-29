@@ -12,11 +12,9 @@ import java.time.Instant;
 public class MediaResponseDto {
     private String id;
     private String productId;
-    private String ownerId;
     private String fileName;
     private String contentType;
     private long size;
     private String url;
-    private String publicId;
     private Instant uploadedAt;
 }

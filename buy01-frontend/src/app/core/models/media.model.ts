@@ -5,7 +5,6 @@ export interface MediaRef {
   fileName: string;
   contentType: string;
   size: number;
-  ownerId: string;
   uploadedAt: string;
 }
 

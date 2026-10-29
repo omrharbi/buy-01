@@ -42,7 +42,11 @@ const STORE_KEY = 'buy01.mock.state';
 interface MockState {
   users: Array<User & { password: string }>;
   products: Product[];
-  media: MediaRef[];
+  media: StoredMedia[];
+}
+
+interface StoredMedia extends MediaRef {
+  ownerId: string;
 }
 
 function load(): MockState {
@@ -283,7 +287,7 @@ function route(request: HttpRequest<unknown>): Observable<HttpEvent<unknown>> | 
     if (!me) {
       return fail(401, 'Sign in to continue.');
     }
-    return ok(state.media.filter((item) => item.ownerId === me.id));
+    return ok(state.media.filter((item) => item.ownerId === me.id).map(publicMedia));
   }
 
   const mediaMatch = /^\/media\/images\/([^/]+)$/.exec(url);
@@ -352,7 +356,7 @@ function uploadWithProgress(file: File, owner: User, state: MockState): Observab
   const response = new Observable<HttpEvent<MediaRef>>((subscriber) => {
     const reader = new FileReader();
     reader.onload = () => {
-      const media: MediaRef = {
+      const media: StoredMedia = {
         id: `m-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
         url: String(reader.result),
         fileName: file.name,
@@ -363,7 +367,7 @@ function uploadWithProgress(file: File, owner: User, state: MockState): Observab
       };
       state.media.push(media);
       save(state);
-      subscriber.next(new HttpResponse({ status: 201, body: media, headers: new HttpHeaders() }));
+      subscriber.next(new HttpResponse({ status: 201, body: publicMedia(media), headers: new HttpHeaders() }));
       subscriber.complete();
     };
     reader.onerror = () => subscriber.error(new HttpErrorResponse({ status: 400, error: { message: 'Could not read that file.' } }));
@@ -371,4 +375,9 @@ function uploadWithProgress(file: File, owner: User, state: MockState): Observab
   });
 
   return concat(progress, response);
+}
+
+function publicMedia(media: StoredMedia): MediaRef {
+  const { id, url, fileName, contentType, size, uploadedAt } = media;
+  return { id, url, fileName, contentType, size, uploadedAt };
 }
