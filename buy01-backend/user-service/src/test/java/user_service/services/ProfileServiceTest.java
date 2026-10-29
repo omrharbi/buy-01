@@ -40,9 +40,7 @@ class ProfileServiceTest {
 
         when(userRepository.findById("client-id")).thenReturn(Optional.of(user));
         when(userRepository.save(user)).thenReturn(user);
-
         profileService.updateCurrentUser("client-id", request);
-
         assertEquals("Updated Client", user.getName());
         assertEquals("https://example.com/avatar.png", user.getAvatarUrl());
         assertEquals("client@example.com", user.getEmail());
