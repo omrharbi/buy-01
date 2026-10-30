@@ -4,6 +4,11 @@ server:
 spring:
   application:
     name: media-service
+  config:
+    # Load local secrets from .env (run from media-service dir or repo root)
+    import:
+      - optional:file:.env[.properties]
+      - optional:file:buy01-backend/media-service/.env[.properties]
   mongodb:
     uri: mongodb://root:password@localhost:27019/media-service-db?authSource=admin
   servlet:

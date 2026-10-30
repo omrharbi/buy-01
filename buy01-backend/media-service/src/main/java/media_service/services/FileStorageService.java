@@ -3,12 +3,14 @@ package media_service.services;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Map;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class FileStorageService {
@@ -24,6 +26,7 @@ public class FileStorageService {
                             "resource_type", "image"
                     ));
         } catch (Exception e) {
+            log.error("Cloudinary upload failed for {}: {}", publicId, e.getMessage(), e);
             throw new RuntimeException("Failed to upload to Cloudinary", e);
         }
     }
