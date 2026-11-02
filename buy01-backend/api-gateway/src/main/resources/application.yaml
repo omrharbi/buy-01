@@ -1,5 +1,11 @@
 server:
-  port: 8080   # make sure no other service uses 8080
+  port: 8443
+  ssl:
+    enabled: true
+    key-store: classpath:buy01-local.p12
+    key-store-password: buy01-local
+    key-store-type: PKCS12
+    key-alias: buy01-local
 
 spring:
   application:

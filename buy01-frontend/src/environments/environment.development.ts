@@ -4,6 +4,6 @@
  */
 export const environment = {
   production: false,
-  apiBase: 'http://localhost:8080',
+  apiBase: 'https://localhost:8443',
   useMockApi: false,
 };
