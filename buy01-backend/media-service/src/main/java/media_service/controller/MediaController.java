@@ -40,6 +40,12 @@ public class MediaController {
         return ResponseEntity.ok(mediaService.get(id));
     }
 
+    @GetMapping
+    @PreAuthorize("hasRole('SELLER')")
+    public ResponseEntity<List<MediaResponseDto>> getAll() {
+        return ResponseEntity.ok(mediaService.getAll());
+    }
+
     @PutMapping(value = "/{id}", consumes = "multipart/form-data")
     @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<MediaResponseDto> update(

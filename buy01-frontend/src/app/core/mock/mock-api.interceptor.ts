@@ -376,7 +376,6 @@ function uploadWithProgress(file: File, owner: User, state: MockState): Observab
 
   return concat(progress, response);
 }
-
 function publicMedia(media: StoredMedia): MediaRef {
   const { id, url, fileName, contentType, size, uploadedAt } = media;
   return { id, url, fileName, contentType, size, uploadedAt };
