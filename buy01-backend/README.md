@@ -51,8 +51,12 @@ Gateway routes:
 Start infrastructure first, then the services in this order.
 
 ```bash
+# Prepare local configuration once. Keep .env private and uncommitted.
+cp .env.example .env
+# Edit .env and set a unique JWT_SECRET and MongoDB password.
+
 # 1. Databases (3 MongoDB containers) and Kafka
-cd Docker-db && docker compose up -d
+cd Docker-db && docker compose --env-file ../.env up -d
 cd kafka && docker compose up -d && cd ../..
 
 # 2. Eureka (wait until http://localhost:8761 loads)
@@ -75,24 +79,20 @@ Each service is configured in `src/main/resources/application.yaml`.
 
 | Setting | Where | Notes |
 |---|---|---|
-| MongoDB URIs | each service | Match the credentials in `Docker-db/docker-compose.yml` (`root` / `password`) |
-| `jwt.secret` | user-service | Override with the `JWT_SECRET` environment variable (32+ characters). The default is for local dev only |
-| `jwt.expiration-ms` | user-service | Token lifetime, default 24 hours |
-| `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` | media-service | Required environment variables; no configuration defaults |
+| MongoDB credentials and ports | `.env` | Shared by the three databases and service connection URIs |
+| `JWT_SECRET` | `.env` | Required by all services that validate or issue JWTs; use a unique value of at least 32 characters |
+| `JWT_EXPIRATION_MS` | `.env` | Token lifetime for user-service, default 24 hours |
+| Service ports, Eureka, Kafka, CORS | `.env` | Local defaults are shown in `.env.example` |
+| `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` | `media-service/.env` | Required for media uploads; keep this ignored file private |
 | Multipart limit | media-service | 5 MB per file |
 
-Set the three Cloudinary environment variables in the media-service process environment before
-starting it. The service fails to start if any required value is missing. Do not commit real
-credentials. Previously committed credentials must be rotated with Cloudinary; removing them
+Copy `media-service/.env.example` to `media-service/.env` and fill in the Cloudinary values if
+you have not already done so. The backend `.gitignore` excludes both `.env` files. Do not commit
+real credentials. Previously committed credentials must be rotated with Cloudinary; removing them
 from the current configuration does not remove them from Git history.
 
-For local development, export the values in the shell that will run Media:
-
-```bash
-export CLOUDINARY_CLOUD_NAME=your-cloud-name
-export CLOUDINARY_API_KEY=your-api-key
-export CLOUDINARY_API_SECRET=your-api-secret
-```
+For deployment, supply the same variables through the deployment platform's secret manager instead
+of copying local `.env` files.
 
 ## API reference
 

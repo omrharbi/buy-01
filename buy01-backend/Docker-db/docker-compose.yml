@@ -6,10 +6,10 @@ services:
     container_name: user-service-db
     restart: unless-stopped
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD}
     ports:
-      - "27020:27017"
+      - "${USER_DB_PORT:-27020}:27017"
     volumes:
       - user-db-data:/data/db
     networks:
@@ -19,10 +19,10 @@ services:
     container_name: product-service-db
     restart: unless-stopped
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD}
     ports:
-      - "27018:27017"
+      - "${PRODUCT_DB_PORT:-27018}:27017"
     volumes:
       - product-db-data:/data/db
     networks:
@@ -32,10 +32,10 @@ services:
     container_name: media-service-db
     restart: unless-stopped
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD:  password
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD}
     ports:
-      - "27019:27017"
+      - "${MEDIA_DB_PORT:-27019}:27017"
     volumes:
       - media-db-data:/data/db
     networks:

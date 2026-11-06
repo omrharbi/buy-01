@@ -1,5 +1,5 @@
 server:
-  port: 8083
+  port: ${MEDIA_SERVICE_PORT:8083}
 
 spring:
   application:
@@ -8,9 +8,11 @@ spring:
     # Load local secrets from .env (run from media-service dir or repo root)
     import:
       - optional:file:.env[.properties]
+      - optional:file:../.env[.properties]
+      - optional:file:buy01-backend/.env[.properties]
       - optional:file:buy01-backend/media-service/.env[.properties]
   mongodb:
-    uri: mongodb://root:password@localhost:27019/media-service-db?authSource=admin
+    uri: mongodb://${MONGODB_ROOT_USERNAME}:${MONGODB_ROOT_PASSWORD}@${MONGODB_HOST:localhost}:${MEDIA_DB_PORT:27019}/media-service-db?authSource=admin
   servlet:
     multipart:
       enabled: true
@@ -18,7 +20,7 @@ spring:
       max-request-size: 5MB
 
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
@@ -26,7 +28,7 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_DEFAULT_ZONE:http://localhost:8761/eureka/}
     register-with-eureka: true
     fetch-registry: true
   instance:
@@ -38,4 +40,4 @@ cloudinary:
   api-secret: ${CLOUDINARY_API_SECRET}
 
 jwt:
-  secret: ${JWT_SECRET:buy01-local-dev-secret-32bytes-min-1234}
+  secret: ${JWT_SECRET}
