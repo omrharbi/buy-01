@@ -14,7 +14,7 @@ import user_service.dto.UserDto;
 import user_service.services.ProfileService;
 
 @RestController
-@RequestMapping("/me")
+@RequestMapping({"/me", "/api/me"})
 @RequiredArgsConstructor
 public class ProfileController {
 

@@ -18,11 +18,15 @@ public class ImageUploadedConsumer {
     @KafkaListener(topics = "image-uploaded-topic", groupId = "product-service-group")
     public void handleImageUploaded(ImageUploadedEvent event) {
         if (event == null || event.getProductId() == null || event.getImageUrl() == null) {
-            log.warn("Ignoring invalid image uploaded event");
+            log.warn("Ignoring invalid image event");
             return;
         }
         try {
-            productService.addImageUrl(event.getProductId(), event.getImageUrl());
+            if ("REMOVE".equalsIgnoreCase(event.getEventType())) {
+                productService.removeImageUrl(event.getProductId(), event.getImageUrl());
+            } else {
+                productService.addImageUrl(event.getProductId(), event.getImageUrl());
+            }
         } catch (ProductNotFoundException e) {
             log.warn("Ignoring image event for missing product {}", event.getProductId());
         }

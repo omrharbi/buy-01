@@ -1,4 +1,4 @@
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 const base = environment.apiBase;
 
 export const API = {
@@ -31,9 +31,9 @@ export const API = {
 
 /** The limits the Media service enforces. The UI states them and checks them first. */
 export const MEDIA_RULES = {
-  maxBytes: 2 * 1024 * 1024,
+  maxBytes: 5 * 1024 * 1024,
   maxFilesPerProduct: 6,
   acceptedTypes: ['image/jpeg', 'image/png', 'image/webp'] as const,
   accept: 'image/jpeg,image/png,image/webp',
-  hint: 'JPEG, PNG or WebP · max 2 MB each · up to 6 images',
+  hint: 'JPEG, PNG or WebP · max 5 MB each · up to 6 images',
 } as const;

@@ -49,8 +49,7 @@ export class ProductForm implements OnInit {
 
   ngOnInit(): void {
     const id = this.id();
-    console.log(id, "ProductForm ngOnInit");
-    
+
     if (!id) {
       return;
     }

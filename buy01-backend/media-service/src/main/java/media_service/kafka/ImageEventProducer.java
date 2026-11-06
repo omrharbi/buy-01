@@ -15,8 +15,14 @@ public class ImageEventProducer {
     private static final String TOPIC = "image-uploaded-topic";
 
     public void publishImageUploaded(String productId, String imageUrl) {
-        ImageUploadedEvent event = new ImageUploadedEvent(productId, imageUrl);
+        ImageUploadedEvent event = new ImageUploadedEvent(productId, imageUrl, "UPLOAD");
         kafkaTemplate.send(TOPIC, productId, event);
         log.info("Published IMAGE_UPLOADED event for product {}", productId);
+    }
+
+    public void publishImageRemoved(String productId, String imageUrl) {
+        ImageUploadedEvent event = new ImageUploadedEvent(productId, imageUrl, "REMOVE");
+        kafkaTemplate.send(TOPIC, productId, event);
+        log.info("Published IMAGE_REMOVED event for product {}", productId);
     }
 }

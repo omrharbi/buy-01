@@ -29,12 +29,12 @@ public class SecurityConfig {
                         .authenticationEntryPoint(restAuthEntryPoint)
                         .accessDeniedHandler(restAuthEntryPoint))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.GET, "/media/images/me").hasRole("SELLER")
-                        .requestMatchers(HttpMethod.POST, "/media/images/**").hasRole("SELLER")
-                        .requestMatchers(HttpMethod.PUT, "/media/images/**").hasRole("SELLER")
-                        .requestMatchers(HttpMethod.DELETE, "/media/images/**").hasRole("SELLER")
-                        .requestMatchers(HttpMethod.GET, "/media/images").hasRole("SELLER")
-                        .requestMatchers(HttpMethod.GET, "/media/images/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/media/images/me", "/api/media/images/me").hasRole("SELLER")
+                        .requestMatchers(HttpMethod.POST, "/media/images/**", "/api/media/images/**").hasRole("SELLER")
+                        .requestMatchers(HttpMethod.PUT, "/media/images/**", "/api/media/images/**").hasRole("SELLER")
+                        .requestMatchers(HttpMethod.DELETE, "/media/images/**", "/api/media/images/**").hasRole("SELLER")
+                        .requestMatchers(HttpMethod.GET, "/media/images", "/api/media/images").hasRole("SELLER")
+                        .requestMatchers(HttpMethod.GET, "/media/images/*", "/api/media/images/*").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

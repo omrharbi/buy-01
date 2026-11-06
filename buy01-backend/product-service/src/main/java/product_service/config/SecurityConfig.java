@@ -29,11 +29,11 @@ public class SecurityConfig {
                         .authenticationEntryPoint(restAuthEntryPoint)
                         .accessDeniedHandler(restAuthEntryPoint))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.GET, "/products/my").hasRole("SELLER")
-                        .requestMatchers(HttpMethod.POST, "/products/**").hasRole("SELLER")
-                        .requestMatchers(HttpMethod.PUT, "/products/**").hasRole("SELLER")
-                        .requestMatchers(HttpMethod.DELETE, "/products/**").hasRole("SELLER")
-                        .requestMatchers(HttpMethod.GET, "/products/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/products/my", "/api/products/my").hasRole("SELLER")
+                        .requestMatchers(HttpMethod.POST, "/products/**", "/api/products/**").hasRole("SELLER")
+                        .requestMatchers(HttpMethod.PUT, "/products/**", "/api/products/**").hasRole("SELLER")
+                        .requestMatchers(HttpMethod.DELETE, "/products/**", "/api/products/**").hasRole("SELLER")
+                        .requestMatchers(HttpMethod.GET, "/products/**", "/api/products/**").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

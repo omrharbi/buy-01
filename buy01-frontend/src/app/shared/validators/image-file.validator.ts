@@ -26,7 +26,7 @@ export async function validateImageFile(file: File): Promise<string | null> {
     return `${file.name} isn't an image. Upload a JPEG, PNG or WebP.`;
   }
   if (file.size > MEDIA_RULES.maxBytes) {
-    return `${file.name} is ${formatBytes(file.size)}. Images must be 2 MB or smaller.`;
+    return `${file.name} is ${formatBytes(file.size)}. Images must be 5 MB or smaller.`;
   }
   if (!(await hasImageSignature(file))) {
     return `${file.name} doesn't look like a real image file.`;

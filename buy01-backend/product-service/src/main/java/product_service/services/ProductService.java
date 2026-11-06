@@ -112,6 +112,15 @@ public class ProductService {
         }
     }
 
+    public void removeImageUrl(String productId, String url) {
+        if (url == null || url.isBlank()) {
+            return;
+        }
+        Product product = findOrThrow(productId);
+        product.getImageUrls().removeIf(candidate -> candidate.equals(url));
+        productRepository.save(product);
+    }
+
     private Product findOrThrow(String productId) {
         return productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found: " + productId));

@@ -29,9 +29,9 @@ export class SignUp {
   protected readonly failure = signal<FailedRequest | null>(null);
 
   protected readonly form = this.fb.nonNullable.group({
-    name: ['', [Validators.required, Validators.maxLength(60)]],
+    name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(15)]],
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(8)]],
+    password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(15)]],
     role: ['CLIENT' as Role, [Validators.required]],
   });
 

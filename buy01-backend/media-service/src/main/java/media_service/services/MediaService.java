@@ -77,6 +77,8 @@ public class MediaService {
         Media media = findOrThrow(id);
         requireOwner(media, ownerId);
 
+        String previousProductId = media.getProductId();
+        String previousUrl = media.getUrl();
         String oldPublicId = media.getPublicId();
         Map<String, Object> uploadResult = fileStorageService.uploadFile(file,
                 (media.getProductId() != null ? media.getProductId() : "standalone") + "_" + ownerId + "_"
@@ -89,6 +91,9 @@ public class MediaService {
         media.setUploadedAt(Instant.now());
         Media saved = mediaRepository.save(media);
         fileStorageService.delete(oldPublicId);
+        if (previousProductId != null && !previousProductId.isBlank()) {
+            imageEventProducer.publishImageRemoved(previousProductId, previousUrl);
+        }
         if (saved.getProductId() != null && !saved.getProductId().isBlank()) {
             imageEventProducer.publishImageUploaded(saved.getProductId(), saved.getUrl());
         }
@@ -98,6 +103,9 @@ public class MediaService {
     public void delete(String id, String ownerId) {
         Media media = findOrThrow(id);
         requireOwner(media, ownerId);
+        if (media.getProductId() != null && !media.getProductId().isBlank()) {
+            imageEventProducer.publishImageRemoved(media.getProductId(), media.getUrl());
+        }
         fileStorageService.delete(media.getPublicId());
         mediaRepository.deleteById(id);
     }

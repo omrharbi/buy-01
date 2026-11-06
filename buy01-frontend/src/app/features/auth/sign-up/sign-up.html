@@ -15,7 +15,7 @@
       <ui-form-field
         label="Display name"
         fieldId="name"
-        hint="This is the name clients see on your products."
+        hint="3-15 characters. This is the name clients see on your products."
         [control]="form.controls.name"
         [serverError]="fieldError('name')">
         <input id="name" class="control" type="text" autocomplete="name" formControlName="name"
@@ -56,7 +56,7 @@
       <ui-form-field
         label="Password"
         fieldId="signup-password"
-        hint="At least 8 characters."
+        hint="6-15 characters."
         [control]="form.controls.password"
         [serverError]="fieldError('password')">
         <input id="signup-password" class="control" type="password" autocomplete="new-password"

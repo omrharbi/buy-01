@@ -17,11 +17,13 @@ public class MediaClient {
     public MediaInfo upload(MultipartFile file, String productId, String userId) {
         MultipartBodyBuilder body = new MultipartBodyBuilder();
         body.part("file", file.getResource());
-        body.part("productId", productId);
+        if (productId != null) {
+            body.part("productId", productId);
+        }
 
         return restClient.post()
-                .uri("/api/media")
-                .header("X-User-Id", userId)
+                .uri("/api/media/images/upload")
+                .header("Authorization", "Bearer " + userId)
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(body.build())
                 .retrieve()
@@ -30,8 +32,8 @@ public class MediaClient {
 
     public void delete(String mediaId, String userId) {
         restClient.delete()
-                .uri("/api/media/{id}", mediaId)
-                .header("X-User-Id", userId)
+                .uri("/api/media/images/{id}", mediaId)
+                .header("Authorization", "Bearer " + userId)
                 .retrieve()
                 .toBodilessEntity();
     }

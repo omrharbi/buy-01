@@ -10,4 +10,11 @@ import lombok.NoArgsConstructor;
 public class ImageUploadedEvent {
     private String productId;
     private String imageUrl;
+    private String eventType = "UPLOAD";
+
+    public ImageUploadedEvent(String productId, String imageUrl) {
+        this.productId = productId;
+        this.imageUrl = imageUrl;
+        this.eventType = "UPLOAD";
+    }
 }

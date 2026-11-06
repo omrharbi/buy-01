@@ -20,6 +20,9 @@ public class JwtService {
     private final SecretKey signingKey;
 
     public JwtService(@Value("${jwt.secret}") String secret) {
+        if (secret == null || secret.isBlank() || secret.length() < 32) {
+            throw new IllegalArgumentException("JWT secret must be configured to a value at least 32 characters long.");
+        }
         this.signingKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 

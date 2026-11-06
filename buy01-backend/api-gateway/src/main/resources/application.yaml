@@ -30,15 +30,15 @@ spring:
             - id: user-service
               uri: lb://USER-SERVICE
               predicates:
-                - Path=/auth/**,/api/auth/**,/me
+                - Path=/auth/**,/api/auth/**,/me,/api/me
             - id: product-service
               uri: lb://PRODUCT-SERVICE
               predicates:
-                - Path=/products/**
+                - Path=/products/**,/api/products/**
             - id: media-service
               uri: lb://MEDIA-SERVICE
               predicates:
-                - Path=/media/**
+                - Path=/media/**,/api/media/**
 
 eureka:
   client:

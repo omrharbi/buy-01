@@ -23,7 +23,7 @@ import product_service.services.ProductService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/products")
+@RequestMapping({"/products", "/api/products"})
 public class ProductController {
 
     private final ProductService productService;
